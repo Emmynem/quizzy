@@ -45,6 +45,7 @@ export default (sequelize, Sequelize) => {
         identifier: {
             type: Sequelize.STRING(10),
             allowNull: false,
+            unique: true
         },
         description: {
             type: Sequelize.TEXT,

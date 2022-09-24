@@ -42,6 +42,10 @@ export default (sequelize, Sequelize) => {
             type: Sequelize.TEXT,
             allowNull: false,
         },
+        multiple_answer: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+        },
         status: {
             type: Sequelize.INTEGER(1),
             allowNull: false,
