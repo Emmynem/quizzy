@@ -2,8 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import db from "../models/index.js";
 import { logger } from '../common/index.js';
 import { api_key_start, random_uuid, default_status, max_free_candidates, max_free_assessments, 
-    max_free_questions, max_free_answers, max_free_platform_users, free_category_duration, max_paid_candidates, max_paid_assessments,
-    max_paid_questions, max_paid_answers, max_paid_platform_users, paid_category_duration } from './config.js';
+    max_free_questions, max_free_answers, max_free_platform_users, free_assessment_duration, free_assessment_retakes, 
+    max_paid_candidates, max_paid_assessments, max_paid_questions, max_paid_answers, max_paid_platform_users, 
+    paid_assessment_duration, paid_assessment_retakes } from './config.js';
 
 const ApiKeys = db.api_keys;
 const AppDefaults = db.app_defaults;
@@ -38,9 +39,15 @@ export async function createAppDefaults() {
         },
         {
             unique_id: uuidv4(),
-            ...free_category_duration,
+            ...free_assessment_duration,
             status: default_status
-        }, {
+        }, 
+        {
+            unique_id: uuidv4(),
+            ...free_assessment_retakes,
+            status: default_status
+        },
+        {
             unique_id: uuidv4(),
             ...max_paid_answers,
             status: default_status
@@ -67,7 +74,12 @@ export async function createAppDefaults() {
         },
         {
             unique_id: uuidv4(),
-            ...paid_category_duration,
+            ...paid_assessment_duration,
+            status: default_status
+        },
+        {
+            unique_id: uuidv4(),
+            ...paid_assessment_retakes,
             status: default_status
         }
     ];

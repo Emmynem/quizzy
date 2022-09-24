@@ -72,6 +72,9 @@ export const route_methods = ['GET', 'POST', 'PUT', 'DELETE'];
 // API Key
 export const api_key_start = "quizzy_";
 
+// Platforms Access Url 
+export const platform_access_url = "https://www.quizzy.cloud/platforms/access/";
+
 // App Defaults 
 export const max_free_candidates = {
     criteria : "Max Free Candidates",
@@ -112,7 +115,7 @@ export const max_paid_assessments = {
 export const max_free_answers = {
     criteria: "Max Free Answers",
     data_type: "INTEGER",
-    value: 3
+    value: 4
 };
 
 export const max_paid_answers = {
@@ -133,14 +136,26 @@ export const max_paid_platform_users = {
     value: 50
 };
 
-export const free_category_duration = {
-    criteria: "Free Category Duration",
+export const free_assessment_duration = {
+    criteria: "Free Assessment Duration",
     data_type: "BOOLEAN",
     value: "false"
 };
 
-export const paid_category_duration = {
-    criteria: "Paid Category Duration",
+export const paid_assessment_duration = {
+    criteria: "Paid Assessment Duration",
+    data_type: "BOOLEAN",
+    value: "true"
+};
+
+export const free_assessment_retakes = {
+    criteria: "Free Assessment Retakes",
+    data_type: "BOOLEAN",
+    value: "false"
+};
+
+export const paid_assessment_retakes = {
+    criteria: "Paid Assessment Retakes",
     data_type: "BOOLEAN",
     value: "true"
 };
@@ -219,6 +234,19 @@ export const random_uuid = (length) => {
     else {
         let values = crypto.randomBytes(length).toString('hex');
         return values;
+    }
+};
+
+export const random_numbers = (length) => {
+    if (length === undefined || length === null || length === 0) {
+        return 0;
+    }
+    else {
+        let rand_number = "";
+        for (let index = 0; index < length; index++) {
+            rand_number += Math.floor(Math.random() * 10);
+        }
+        return rand_number;
     }
 };
 

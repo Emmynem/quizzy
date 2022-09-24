@@ -1,9 +1,5 @@
-import usersModel from "./users.model.js";
-
 export default (sequelize, Sequelize) => {
     
-    const users = usersModel(sequelize, Sequelize);
-
     const platforms = sequelize.define("platform", {
         id: {
             type: Sequelize.BIGINT,
@@ -15,14 +11,6 @@ export default (sequelize, Sequelize) => {
             type: Sequelize.STRING(40),
             allowNull: false,
             unique: true
-        },
-        user_unique_id: {
-            type: Sequelize.STRING(40),
-            allowNull: false,
-            references: {
-                model: users,
-                key: "unique_id"
-            }
         },
         name: {
             type: Sequelize.STRING(50),
@@ -36,10 +24,18 @@ export default (sequelize, Sequelize) => {
             type: Sequelize.STRING(255),
             allowNull: false,
         },
+        description: {
+            type: Sequelize.TEXT,
+            allowNull: false,
+        },
         token: {
             type: Sequelize.STRING(40),
             allowNull: false,
             unique: true
+        },
+        access_url: {
+            type: Sequelize.STRING(300),
+            allowNull: false
         },
         live_api_key: {
             type: Sequelize.STRING(50),

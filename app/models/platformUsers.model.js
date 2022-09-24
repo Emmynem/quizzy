@@ -1,12 +1,10 @@
-import usersModel from "./users.model.js";
 import platformsModel from "./platforms.model.js";
 
 export default (sequelize, Sequelize) => {
 
     const platforms = platformsModel(sequelize, Sequelize);
-    const users = usersModel(sequelize, Sequelize);
 
-    const platformsUsers = sequelize.define("platform_user", {
+    const platformUsers = sequelize.define("platform_user", {
         id: {
             type: Sequelize.BIGINT,
             allowNull: false,
@@ -26,29 +24,31 @@ export default (sequelize, Sequelize) => {
                 key: "unique_id"
             }
         },
-        user_unique_id: {
-            type: Sequelize.STRING(40), 
+        firstname: {
+            type: Sequelize.STRING(50),
             allowNull: false,
-            references: {
-                model: users,
-                key: "unique_id"
-            }
         },
-        added_unique_id: {
-            type: Sequelize.STRING(40),
-            allowNull: false,
-            references: {
-                model: users,
-                key: "unique_id"
-            }
+        middlename: {
+            type: Sequelize.STRING(50),
+            allowNull: true,
         },
-        edit_unique_id: {
-            type: Sequelize.STRING(40),
+        lastname: {
+            type: Sequelize.STRING(50),
             allowNull: false,
-            references: {
-                model: users,
-                key: "unique_id"
-            }
+        },
+        email: {
+            type: Sequelize.STRING(255),
+            allowNull: false,
+            unique: true
+        },
+        mobile_number: {
+            type: Sequelize.STRING(20),
+            allowNull: true,
+            unique: true
+        },
+        gender: {
+            type: Sequelize.STRING(20),
+            allowNull: false,
         },
         routes: {
             type: Sequelize.TEXT,
@@ -63,7 +63,7 @@ export default (sequelize, Sequelize) => {
             allowNull: false,
         }
     }, {
-        tableName: 'quizzy_platforms_users_tbl'
+        tableName: 'quizzy_platform_users_tbl'
     });
-    return platformsUsers;
+    return platformUsers;
 };
