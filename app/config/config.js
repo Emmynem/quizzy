@@ -75,6 +75,9 @@ export const api_key_start = "quizzy_";
 // Platforms Access Url 
 export const platform_access_url = "https://www.quizzy.cloud/platforms/access/";
 
+// PG Age
+export const pg_age = 13;
+
 // App Defaults 
 export const max_free_candidates = {
     criteria : "Max Free Candidates",
@@ -303,4 +306,13 @@ export const remove_unwanted_file = (file_name, req) => {
         if (err) throw err;
         logger.warn(`${join_path_and_file(file_name, req)} was deleted`);
     });
+};
+
+export const validate_pg_age_signup = (dob) => {
+    const d = new Date(dob);
+    const today = new Date();
+    const year_diff = today.getFullYear() - d.getFullYear();
+    if (d == "Invalid Date") return false;
+    if (year_diff < pg_age) return false;
+    return true;
 };
