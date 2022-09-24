@@ -6,8 +6,8 @@ import { api_key_start, random_uuid, default_status, max_free_candidates, max_fr
     max_paid_candidates, max_paid_assessments, max_paid_questions, max_paid_answers, max_paid_platform_users, 
     paid_assessment_duration, paid_assessment_retakes } from './config.js';
 
-const ApiKeys = db.api_keys;
-const AppDefaults = db.app_defaults;
+const API_KEYS = db.api_keys;
+const APP_DEFAULTS = db.app_defaults;
 
 export async function createAppDefaults() {
 
@@ -84,12 +84,12 @@ export async function createAppDefaults() {
         }
     ];
 
-    const count = await AppDefaults.count();
+    const count = await APP_DEFAULTS.count();
 
     if (count <= 0) {
         try {
             await db.sequelize.transaction((t) => {
-                const appDefaults = AppDefaults.bulkCreate(details, { transaction: t });
+                const appDefaults = APP_DEFAULTS.bulkCreate(details, { transaction: t });
                 return appDefaults;
             })
             logger.info('Added app defaults');
@@ -109,12 +109,12 @@ export async function createApiKeys() {
         status: default_status
     };
 
-    const count = await ApiKeys.count();
+    const count = await API_KEYS.count();
 
     if (count <= 0) {
         try {
             await db.sequelize.transaction((t) => {
-                const apikey = ApiKeys.create(details, {transaction: t});
+                const apikey = API_KEYS.create(details, {transaction: t});
                 return apikey;
             })
             logger.info('Added api keys defaults');

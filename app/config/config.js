@@ -229,6 +229,20 @@ export const check_user_route = (method, path, routes) => {
     }
 };
 
+export const validate_platform_user_route = (routes) => {
+    if (routes === super_admin_routes) return true
+    else if (!Array.isArray(routes)) return false
+    else if (routes.length === 0) return false
+    else return true
+};
+
+export const validate_platform_user_route_max_length = (routes) => {
+    if (routes === super_admin_routes) return true
+    else if (!Array.isArray(routes)) return false
+    else if (JSON.stringify(routes).length > check_length_TEXT) return false
+    else return true
+};
+
 export const random_uuid = (length) => {
     if (length === undefined || length === null || length === 0) {
         let values = crypto.randomBytes(20).toString('hex');
