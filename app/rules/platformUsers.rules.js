@@ -8,16 +8,18 @@ const Op = db.Sequelize.Op;
 
 export const platform_user_rules = {
     forFindingPlatformUser: [
-        check('unique_id').exists({ checkNull: true, checkFalsy: true }).withMessage("Unique Id is required"),
-        check('platform_unique_id').exists({ checkNull: true, checkFalsy: true }).withMessage("Platform Unique Id is required"),
-        check('platform_unique_id')
+        check('platform_unique_id', "Platform Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
             .custom(platform_unique_id => {
                 return PLATFORMS.findOne({ where: { unique_id: platform_unique_id, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('Platform not found!');
                 });
             })
             .withMessage('Platform not found'),
-        check('unique_id')  
+        check('unique_id', "Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
             .custom((unique_id, {req}) => {
                 return PLATFORM_USERS.findOne({ 
                     where: { 
@@ -32,21 +34,36 @@ export const platform_user_rules = {
             .withMessage('Platform user not found')
     ],
     forAdding: [
-        check('platform_unique_id').exists({ checkNull: true, checkFalsy: true }).withMessage("Platform Unique Id is required"),
-        check('platform_unique_id')
+        check('platform_unique_id', "Platform Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
             .custom(platform_unique_id => {
                 return PLATFORMS.findOne({ where: { unique_id: platform_unique_id, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('Platform not found!');
                 });
             })
             .withMessage('Platform not found'),
-        check('firstname').exists({ checkNull: true, checkFalsy: true }).withMessage("Firstname is required"),
-        check('firstname').isString().isLength({ min: 3, max: 50 }).withMessage("Invalid length (3 - 50) characters"),
-        check('middlename').optional({ checkFalsy: false }).isString().isLength({ min: 3, max: 50 }).withMessage("Invalid length (3 - 50) characters"),
-        check('lastname').exists({ checkNull: true, checkFalsy: true }).withMessage("Lastname is required"),
-        check('lastname').isString().isLength({ min: 3, max: 50 }).withMessage("Invalid length (3 - 50) characters"),
-        check('email').isEmail().withMessage('Invalid email format'),
-        check('email')
+        check('firstname', "Firstname is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isString().isLength({ min: 3, max: 50 })
+            .withMessage("Invalid length (3 - 50) characters"),
+        check('middlename')
+            .optional({ checkFalsy: false })
+            .bail()
+            .isString().isLength({ min: 3, max: 50 })
+            .withMessage("Invalid length (3 - 50) characters"),
+        check('lastname', "Lastname is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isString().isLength({ min: 3, max: 50 })
+            .withMessage("Invalid length (3 - 50) characters"),
+        check('email', "Email is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isEmail()
+            .withMessage('Invalid email format')
+            .bail()
             .custom((email, {req}) => {
                 return PLATFORM_USERS.findOne({ 
                     where: { 
@@ -58,8 +75,10 @@ export const platform_user_rules = {
                 });
             })
             .withMessage('Email already exists'),
-        check('mobile_number').optional({ checkFalsy: false }).isMobilePhone().withMessage('Invalid mobile number'),
-        check('mobile_number').optional({ checkFalsy: false })
+        check('mobile_number', "Invalid mobile number")
+            .optional({ checkFalsy: false })
+            .isMobilePhone()
+            .bail()
             .custom((mobile_number, {req}) => {
                 return PLATFORM_USERS.findOne({ 
                     where: { 
@@ -71,20 +90,37 @@ export const platform_user_rules = {
                 });
             })
             .withMessage('Mobile number already exists'),
-        check('gender').exists({ checkNull: true, checkFalsy: true }).withMessage("Gender is required"),
-        check('gender').isString().isLength({ min: 3, max: 20 }).withMessage("Invalid length (3 - 20) characters"),
-        check('routes').exists({ checkNull: true, checkFalsy: true }).withMessage("Routes is required"),
-        check('routes').custom(routes => !!validate_platform_user_route(routes)).withMessage(`Invalid route, accepts '${super_admin_routes}' or an array(not empty)`),
-        check('routes').custom(routes => !!validate_platform_user_route_max_length(routes)).withMessage(`Max length reached`)
+        check('gender', "Gender is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isString().isLength({ min: 3, max: 20 })
+            .withMessage("Invalid length (3 - 20) characters"),
+        check('routes', "Routes is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(routes => !!validate_platform_user_route(routes)).withMessage(`Invalid route, accepts '${super_admin_routes}' or an array(not empty)`)
+            .bail()
+            .custom(routes => !!validate_platform_user_route_max_length(routes)).withMessage(`Max length reached`)
     ],
     forUpdatingDetails: [
-        check('firstname').exists({ checkNull: true, checkFalsy: true }).withMessage("Firstname is required"),
-        check('firstname').isString().isLength({ min: 3, max: 50 }).withMessage("Invalid length (3 - 50) characters"),
-        check('middlename').optional({ checkFalsy: false }).isString().isLength({ min: 3, max: 50 }).withMessage("Invalid length (3 - 50) characters"),
-        check('lastname').exists({ checkNull: true, checkFalsy: true }).withMessage("Lastname is required"),
-        check('lastname').isString().isLength({ min: 3, max: 50 }).withMessage("Invalid length (3 - 50) characters"),
-        check('email').isEmail().withMessage('Invalid email format'),
-        check('email')
+        check('firstname', "Firstname is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isString().isLength({ min: 3, max: 50 })
+            .withMessage("Invalid length (3 - 50) characters"),
+        check('middlename')
+            .optional({ checkFalsy: false })
+            .bail()
+            .isString().isLength({ min: 3, max: 50 })
+            .withMessage("Invalid length (3 - 50) characters"),
+        check('lastname', "Lastname is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isString().isLength({ min: 3, max: 50 })
+            .withMessage("Invalid length (3 - 50) characters"),
+        check('email', "Invalid email format")
+            .isEmail()
+            .bail()
             .custom((email, { req }) => {
                 return PLATFORM_USERS.findOne({
                     where: {
@@ -99,8 +135,10 @@ export const platform_user_rules = {
                 });
             })
             .withMessage('Email already exists'),
-        check('mobile_number').optional({ checkFalsy: false }).isMobilePhone().withMessage('Invalid mobile number'),
-        check('mobile_number').optional({ checkFalsy: false })
+        check('mobile_number', "Invalid mobile number")
+            .optional({ checkFalsy: false })
+            .isMobilePhone()
+            .bail()
             .custom((mobile_number, { req }) => {
                 return PLATFORM_USERS.findOne({
                     where: {
@@ -115,12 +153,18 @@ export const platform_user_rules = {
                 });
             })
             .withMessage('Mobile number already exists'),
-        check('gender').exists({ checkNull: true, checkFalsy: true }).withMessage("Gender is required"),
-        check('gender').isString().isLength({ min: 3, max: 20 }).withMessage("Invalid length (3 - 20) characters")
+        check('gender', "Gender is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isString().isLength({ min: 3, max: 20 })
+            .withMessage("Invalid length (3 - 20) characters")
     ],
     forUpdatingRoutes: [
-        check('routes').exists({ checkNull: true, checkFalsy: true }).withMessage("Routes is required"),
-        check('routes').custom(routes => !!validate_platform_user_route(routes)).withMessage(`Invalid route, accepts '${super_admin_routes}' or an array(not empty)`),
-        check('routes').custom(routes => !!validate_platform_user_route_max_length(routes)).withMessage(`Max length reached`)
+        check('routes', "Routes is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(routes => !!validate_platform_user_route(routes)).withMessage(`Invalid route, accepts '${super_admin_routes}' or an array(not empty)`)
+            .bail()
+            .custom(routes => !!validate_platform_user_route_max_length(routes)).withMessage(`Max length reached`)
     ]
 };  

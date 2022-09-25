@@ -7,16 +7,18 @@ const NOTIFICATIONS = db.notifications;
 
 export const notification_rules = {
     forFindingNotification: [
-        check('unique_id').exists({ checkNull: true, checkFalsy: true }).withMessage("Unique Id is required"),
-        check('user_unique_id').exists({ checkNull: true, checkFalsy: true }).withMessage("User Unique Id is required"),
-        check('user_unique_id')
+        check('user_unique_id', "User Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
             .custom(user_unique_id => {
                 return USERS.findOne({ where: { unique_id: user_unique_id, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('User not found!');
                 });
             })
             .withMessage('User not found'),
-        check('unique_id')
+        check('unique_id', "Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail() 
             .custom((unique_id, {req}) => {
                 return NOTIFICATIONS.findOne({ 
                     where: { 
@@ -31,18 +33,29 @@ export const notification_rules = {
             .withMessage('Notification not found')
     ],
     forAdding: [
-        check('user_unique_id').exists({ checkNull: true, checkFalsy: true }).withMessage("User Unique Id is required"),
-        check('user_unique_id')
+        check('user_unique_id', "User Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
             .custom(user_unique_id => {
                 return USERS.findOne({ where: { unique_id: user_unique_id, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('User not found!');
                 });
             })
             .withMessage('User not found'),
-        check('type').exists({ checkNull: true, checkFalsy: true }).withMessage("Type is required"),
-        check('type').isString().isLength({ min: 3, max: 20 }).withMessage("Invalid length (3 - 20) characters"),
-        check('action').exists({ checkNull: true, checkFalsy: true }).withMessage("Action is required"),
-        check('action').isString().isLength({ min: 3, max: 200 }).withMessage("Invalid length (3 - 200) characters"),
-        check('details').optional({ checkFalsy: false }).isLength({ min: 3, max: check_length_TEXT }).withMessage(`Invalid length (3 - ${check_length_TEXT}) characters`),
+        check('type', "Type is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isString().isLength({ min: 3, max: 20 })
+            .withMessage("Invalid length (3 - 20) characters"),
+        check('action', "Action is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isString().isLength({ min: 3, max: 200 })
+            .withMessage("Invalid length (3 - 200) characters"),
+        check('details')
+            .optional({ checkFalsy: false })
+            .bail()
+            .isLength({ min: 3, max: check_length_TEXT })
+            .withMessage(`Invalid length (3 - ${check_length_TEXT}) characters`)
     ],
 };  

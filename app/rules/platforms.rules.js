@@ -7,8 +7,9 @@ const Op = db.Sequelize.Op;
 
 export const platform_rules = {
     forFindingPlatform: [
-        check('unique_id').exists({ checkNull: true, checkFalsy: true }).withMessage("Unique Id is required"),
-        check('unique_id')
+        check('unique_id', "Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
             .custom(unique_id => {
                 return PLATFORMS.findOne({ where: { unique_id, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('Platform not found!');
@@ -17,8 +18,9 @@ export const platform_rules = {
             .withMessage('Platform not found')
     ],
     forFindingPlatformViaToken: [
-        check('token').exists({ checkNull: true, checkFalsy: true }).withMessage("Token is required"),
-        check('token')
+        check('token', "Token is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail() 
             .custom(token => {
                 return PLATFORMS.findOne({ where: { token, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('Platform not found!');
@@ -27,24 +29,36 @@ export const platform_rules = {
             .withMessage('Platform not found')
     ],
     forAdding: [
-        check('name').exists({ checkNull: true, checkFalsy: true }).withMessage("Name is required"),
-        check('name').isString().isLength({ min: 3, max: 50 }).withMessage("Invalid length (3 - 50) characters"),
-        check('name')
+        check('name', "Name is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail() 
+            .isString().isLength({ min: 3, max: 50 })
+            .withMessage("Invalid length (3 - 50) characters")
+            .bail()
             .custom(name => {
                 return PLATFORMS.findOne({ where: { stripped: strip_text(name), status: default_status } }).then(data => {
                     if (data) return Promise.reject('Platform already exists!');
                 });
             })
             .withMessage('Platform already exists'),
-        check('email').exists({ checkNull: true, checkFalsy: true }).withMessage("Email is required"),
-        check('email').isEmail().withMessage('Invalid email format'),
-        check('description').exists({ checkNull: true, checkFalsy: true }).withMessage("Description is required"),
-        check('description').isLength({ min: 3, max: check_length_TEXT }).withMessage(`Invalid length (3 - ${check_length_TEXT}) characters`),
+        check('email', "Email is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isEmail()
+            .withMessage('Invalid email format'),
+        check('description', "Description is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isLength({ min: 3, max: check_length_TEXT })
+            .withMessage(`Invalid length (3 - ${check_length_TEXT}) characters`)
     ],
     forEditing: [
-        check('name').exists({ checkNull: true, checkFalsy: true }).withMessage("Name is required"),
-        check('name').isString().isLength({ min: 3, max: 50 }).withMessage("Invalid length (3 - 50) characters"),
-        check('name')
+        check('name', "Name is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail() 
+            .isString().isLength({ min: 3, max: 50 })
+            .withMessage("Invalid length (3 - 50) characters")
+            .bail()
             .custom((name, {req}) => {
                 return PLATFORMS.findOne({ 
                     where: { 
@@ -59,9 +73,10 @@ export const platform_rules = {
                 });
             })
             .withMessage('Platform already exists'),
-        check('email').exists({ checkNull: true, checkFalsy: true }).withMessage("Email is required"),
-        check('email').isEmail().withMessage('Invalid email format'),
-        check('description').exists({ checkNull: true, checkFalsy: true }).withMessage("Description is required"),
-        check('description').isLength({ min: 3, max: check_length_TEXT }).withMessage(`Invalid length (3 - ${check_length_TEXT}) characters`),
+        check('description', "Description is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isLength({ min: 3, max: check_length_TEXT })
+            .withMessage(`Invalid length (3 - ${check_length_TEXT}) characters`)
     ],
 };  
