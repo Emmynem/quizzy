@@ -14,8 +14,7 @@ export const platform_notification_rules = {
                 return PLATFORMS.findOne({ where: { unique_id: platform_unique_id, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('Platform not found!');
                 });
-            })
-            .withMessage('Platform not found'),
+            }),
         check('unique_id', "Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()     
@@ -30,7 +29,6 @@ export const platform_notification_rules = {
                     if (!data) return Promise.reject('Notification not found!');
                 });
             })
-            .withMessage('Notification not found')
     ],
     forAdding: [
         check('platform_unique_id', "Platform Unique Id is required")
@@ -40,8 +38,7 @@ export const platform_notification_rules = {
                 return PLATFORMS.findOne({ where: { unique_id: platform_unique_id, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('Platform not found!');
                 });
-            })
-            .withMessage('Platform not found'),
+            }),
         check('type', "Type is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()

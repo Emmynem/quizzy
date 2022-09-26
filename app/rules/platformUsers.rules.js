@@ -15,8 +15,7 @@ export const platform_user_rules = {
                 return PLATFORMS.findOne({ where: { unique_id: platform_unique_id, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('Platform not found!');
                 });
-            })
-            .withMessage('Platform not found'),
+            }),
         check('unique_id', "Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
@@ -31,7 +30,6 @@ export const platform_user_rules = {
                     if (!data) return Promise.reject('Platform user not found!');
                 });
             })
-            .withMessage('Platform user not found')
     ],
     forAdding: [
         check('platform_unique_id', "Platform Unique Id is required")
@@ -41,8 +39,7 @@ export const platform_user_rules = {
                 return PLATFORMS.findOne({ where: { unique_id: platform_unique_id, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('Platform not found!');
                 });
-            })
-            .withMessage('Platform not found'),
+            }),
         check('firstname', "Firstname is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
@@ -73,8 +70,7 @@ export const platform_user_rules = {
                 }).then(data => {
                     if (data) return Promise.reject('Email already exists!');
                 });
-            })
-            .withMessage('Email already exists'),
+            }),
         check('mobile_number', "Invalid mobile number")
             .optional({ checkFalsy: false })
             .isMobilePhone()
@@ -88,8 +84,7 @@ export const platform_user_rules = {
                 }).then(data => {
                     if (data) return Promise.reject('Mobile number already exists!');
                 });
-            })
-            .withMessage('Mobile number already exists'),
+            }),
         check('gender', "Gender is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
@@ -133,8 +128,7 @@ export const platform_user_rules = {
                 }).then(data => {
                     if (data) return Promise.reject('Email already exists!');
                 });
-            })
-            .withMessage('Email already exists'),
+            }),
         check('mobile_number', "Invalid mobile number")
             .optional({ checkFalsy: false })
             .isMobilePhone()
@@ -151,8 +145,7 @@ export const platform_user_rules = {
                 }).then(data => {
                     if (data) return Promise.reject('Mobile number already exists!');
                 });
-            })
-            .withMessage('Mobile number already exists'),
+            }),
         check('gender', "Gender is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()

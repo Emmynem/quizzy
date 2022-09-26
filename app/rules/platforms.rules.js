@@ -15,7 +15,6 @@ export const platform_rules = {
                     if (!data) return Promise.reject('Platform not found!');
                 });
             })
-            .withMessage('Platform not found')
     ],
     forFindingPlatformViaToken: [
         check('token', "Token is required")
@@ -26,7 +25,6 @@ export const platform_rules = {
                     if (!data) return Promise.reject('Platform not found!');
                 });
             })
-            .withMessage('Platform not found')
     ],
     forAdding: [
         check('name', "Name is required")
@@ -39,8 +37,7 @@ export const platform_rules = {
                 return PLATFORMS.findOne({ where: { stripped: strip_text(name), status: default_status } }).then(data => {
                     if (data) return Promise.reject('Platform already exists!');
                 });
-            })
-            .withMessage('Platform already exists'),
+            }),
         check('email', "Email is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
@@ -71,8 +68,7 @@ export const platform_rules = {
                 }).then(data => {
                     if (data) return Promise.reject('Platform already exists!');
                 });
-            })
-            .withMessage('Platform already exists'),
+            }),
         check('description', "Description is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()

@@ -14,8 +14,7 @@ export const notification_rules = {
                 return USERS.findOne({ where: { unique_id: user_unique_id, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('User not found!');
                 });
-            })
-            .withMessage('User not found'),
+            }),
         check('unique_id', "Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail() 
@@ -30,7 +29,6 @@ export const notification_rules = {
                     if (!data) return Promise.reject('Notification not found!');
                 });
             })
-            .withMessage('Notification not found')
     ],
     forAdding: [
         check('user_unique_id', "User Unique Id is required")
@@ -40,8 +38,7 @@ export const notification_rules = {
                 return USERS.findOne({ where: { unique_id: user_unique_id, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('User not found!');
                 });
-            })
-            .withMessage('User not found'),
+            }),
         check('type', "Type is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()

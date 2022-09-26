@@ -4,7 +4,7 @@ import { logger } from '../common/index.js';
 import { api_key_start, random_uuid, default_status, max_free_candidates, max_free_assessments, 
     max_free_questions, max_free_answers, max_free_platform_users, free_assessment_duration, free_assessment_retakes, 
     max_paid_candidates, max_paid_assessments, max_paid_questions, max_paid_answers, max_paid_platform_users, 
-    paid_assessment_duration, paid_assessment_retakes } from './config.js';
+    paid_assessment_duration, paid_assessment_retakes, free_assessment_duration_limit, paid_assessment_duration_limit } from './config.js';
 
 const API_KEYS = db.api_keys;
 const APP_DEFAULTS = db.app_defaults;
@@ -49,6 +49,11 @@ export async function createAppDefaults() {
         },
         {
             unique_id: uuidv4(),
+            ...free_assessment_duration_limit,
+            status: default_status
+        },
+        {
+            unique_id: uuidv4(),
             ...max_paid_answers,
             status: default_status
         },
@@ -81,7 +86,12 @@ export async function createAppDefaults() {
             unique_id: uuidv4(),
             ...paid_assessment_retakes,
             status: default_status
-        }
+        },
+        {
+            unique_id: uuidv4(),
+            ...paid_assessment_duration_limit,
+            status: default_status
+        },
     ];
 
     const count = await APP_DEFAULTS.count();

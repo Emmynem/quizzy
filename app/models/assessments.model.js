@@ -88,11 +88,11 @@ export default (sequelize, Sequelize) => {
             allowNull: true,
         },
         duration: {
-            type: Sequelize.INTEGER(4),
+            type: Sequelize.INTEGER(5),
             allowNull: true,
         },
         retakes: {
-            type: Sequelize.INTEGER(4),
+            type: Sequelize.INTEGER(3),
             allowNull: true,
         },
         status: {

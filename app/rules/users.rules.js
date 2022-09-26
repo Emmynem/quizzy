@@ -15,7 +15,6 @@ export const user_rules = {
                     if (!data) return Promise.reject('User not found!');
                 });
             })
-            .withMessage('User not found')
     ],
     forAdding: [
         check('firstname', "Firstname is required")
@@ -43,8 +42,7 @@ export const user_rules = {
                 return USERS.findOne({ where: { email } }).then(data => {
                     if (data) return Promise.reject('Email already exists!');
                 });
-            })
-            .withMessage('Email already exists'),
+            }),
         check('mobile_number', "Invalid mobile number")
             .optional({ checkFalsy: false })
             .isMobilePhone()
@@ -53,8 +51,7 @@ export const user_rules = {
                 return USERS.findOne({ where: { mobile_number } }).then(data => {
                     if (data) return Promise.reject('Mobile number already exists!');
                 });
-            })
-            .withMessage('Mobile number already exists'),
+            }),
         check('gender', "Gender is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
@@ -126,8 +123,7 @@ export const user_rules = {
                 }).then(data => {
                     if (data) return Promise.reject('Mobile number already exists!');
                 });
-            })
-            .withMessage('Mobile number already exists'),
+            }),
         check('gender', "Gender is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
@@ -170,7 +166,6 @@ export const user_rules = {
                     if (!data) return Promise.reject('Email not found!');
                 });
             })
-            .withMessage('Email not found')
     ],
     forMobilePasswordReset: [
         check('mobile_number', "Mobile number is required")
@@ -184,6 +179,5 @@ export const user_rules = {
                     if (!data) return Promise.reject('Mobile number not found!');
                 });
             })
-            .withMessage('Mobile number not found'),
     ],
 };

@@ -50,6 +50,7 @@ export const file_length_100Mb = 100000000;
 
 // Paths and document names
 export const default_profile_image = "https://documents.quizzy.cloud/resources/images/user.svg";
+export const default_platform_image = "https://documents.quizzy.cloud/resources/images/platform.svg";
 export const documents_path = __document_quizzy + "/resources/documents/";
 export const save_document_domain = "https://documents.quizzy.cloud";
 export const save_document_dir = "/resources/documents/";
@@ -161,6 +162,18 @@ export const paid_assessment_retakes = {
     criteria: "Paid Assessment Retakes",
     data_type: "BOOLEAN",
     value: "true"
+};
+
+export const free_assessment_duration_limit = {
+    criteria: "Free Assessment Duration Limit",
+    data_type: "INTEGER",
+    value: 1440
+};
+
+export const paid_assessment_duration_limit = {
+    criteria: "Paid Assessment Duration Limit",
+    data_type: "INTEGER",
+    value: 43800
 };
 
 // End - App Defaults
@@ -328,5 +341,41 @@ export const validate_pg_age_signup = (dob) => {
     const year_diff = today.getFullYear() - d.getFullYear();
     if (d == "Invalid Date") return false;
     if (year_diff < pg_age) return false;
+    return true;
+};
+
+export const return_default_value = (obj) => {
+    const data_type = obj.data_type;
+    const value = obj.value;
+
+    switch (data_type) {
+        case "STRING":
+            return value;
+        case "INTEGER":
+            return parseInt(value);
+        case "BIGINT":
+            return parseInt(value);
+        case "BOOLEAN":
+            if (value == "true") return true;
+            if (value == "false") return false;
+        default:
+            toString(value);
+    }
+};
+
+export const validate_future_date = (date) => {
+    const d = new Date(date);
+    const today = new Date();
+    if (d == "Invalid Date") return false;
+    if (today.getTime() > d.getTime()) return false;
+    return true;
+};
+
+export const validate_future_end_date = (_start, _end) => {
+    const start = new Date(_start);
+    const end = new Date(_end);
+    if (start == "Invalid Date") return false;
+    if (end == "Invalid Date") return false;
+    if (start.getTime() >= end.getTime()) return false;
     return true;
 };
