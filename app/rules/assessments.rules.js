@@ -43,7 +43,6 @@ export const assessments_rules = {
                     if (!data) return Promise.reject('Platform not found!');
                 });
             })
-            .withMessage('Platform not found')
             .bail()
             .custom(async platform_unique_id => {
                 const assessment_count = await ASSESSMENTS.count({ where: { platform_unique_id } });
@@ -97,7 +96,7 @@ export const assessments_rules = {
                 if (candidate_limit > max_candidates) return Promise.reject('Max candidate limit reached!');
             }),
         check('private', "Private is required")
-            .exists({ checkNull: true, checkFalsy: true })
+            .exists({ checkNull: true, checkFalsy: false })
             .bail()
             .isBoolean()
             .withMessage("Value should be true or false"),
@@ -203,7 +202,7 @@ export const assessments_rules = {
     ],
     forUpdatingPrivacy: [
         check('private', "Private is required")
-            .exists({ checkNull: true, checkFalsy: true })
+            .exists({ checkNull: true, checkFalsy: false })
             .bail()
             .isBoolean()
             .withMessage("Value should be true or false")

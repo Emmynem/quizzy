@@ -31,6 +31,30 @@ export const platform_user_rules = {
                 });
             })
     ],
+    forFindingPlatformUserAlt: [
+        check('platform_unique_id', "Platform Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(platform_unique_id => {
+                return PLATFORMS.findOne({ where: { unique_id: platform_unique_id, status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('Platform not found!');
+                });
+            }),
+        check('platform_user_unique_id', "Platform User Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom((platform_user_unique_id, { req }) => {
+                return PLATFORM_USERS.findOne({
+                    where: {
+                        unique_id: platform_user_unique_id,
+                        platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '',
+                        status: default_status
+                    }
+                }).then(data => {
+                    if (!data) return Promise.reject('Platform user not found!');
+                });
+            })
+    ],
     forAdding: [
         check('platform_unique_id', "Platform Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })

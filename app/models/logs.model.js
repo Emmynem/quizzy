@@ -40,7 +40,7 @@ export default (sequelize, Sequelize) => {
         },
         end_time: {
             type: Sequelize.DATE,
-            allowNull: false,
+            allowNull: true,
         },
         status: {
             type: Sequelize.INTEGER(1),

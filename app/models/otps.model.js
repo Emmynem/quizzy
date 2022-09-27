@@ -18,7 +18,7 @@ export default (sequelize, Sequelize) => {
         },
         platform_unique_id: {
             type: Sequelize.STRING(40),
-            allowNull: true,
+            allowNull: false,
             references: {
                 model: platforms,
                 key: "unique_id"
