@@ -51,6 +51,7 @@ export const file_length_100Mb = 100000000;
 // Paths and document names
 export const default_profile_image = "https://documents.quizzy.cloud/resources/images/user.svg";
 export const default_platform_image = "https://documents.quizzy.cloud/resources/images/platform.svg";
+export const default_assessment_image = "https://documents.quizzy.cloud/resources/images/assessment.svg";
 export const documents_path = __document_quizzy + "/resources/documents/";
 export const save_document_domain = "https://documents.quizzy.cloud";
 export const save_document_dir = "/resources/documents/";

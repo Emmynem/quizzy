@@ -16,6 +16,16 @@ export const user_rules = {
                 });
             })
     ],
+    forFindingUserAlt: [
+        check('user_unique_id', "User Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(user_unique_id => {
+                return USERS.findOne({ where: { unique_id: user_unique_id, status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('User not found!');
+                });
+            })
+    ],
     forAdding: [
         check('firstname', "Firstname is required")
             .exists({ checkNull: true, checkFalsy: true })

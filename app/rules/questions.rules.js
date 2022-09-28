@@ -33,6 +33,16 @@ export const questions_rules = {
                 });
             })
     ],
+    forFindingQuestionAlt: [
+        check('question_unique_id', "Question Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(question_unique_id => {
+                return QUESTIONS.findOne({ where: { unique_id: question_unique_id, status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('Question not found!');
+                });
+            })
+    ],
     forAdding: [
         check('assessment_unique_id', "Assessment Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })
@@ -79,6 +89,8 @@ export const questions_rules = {
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
             .isInt()
+            .withMessage("Invalid order, only numbers allowed")
+            .bail()
             .custom(order => {
                 if (order === 0) return false;
                 else if (order < 0) return false;
@@ -104,6 +116,8 @@ export const questions_rules = {
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
             .isInt()
+            .withMessage("Invalid order, only numbers allowed")
+            .bail()
             .custom(order => {
                 if (order === 0) return false;
                 else if (order < 0) return false;

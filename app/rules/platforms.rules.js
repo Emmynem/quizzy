@@ -16,6 +16,16 @@ export const platform_rules = {
                 });
             })
     ],
+    forFindingPlatformAlt: [
+        check('platform_unique_id', "Platform Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(platform_unique_id => {
+                return PLATFORMS.findOne({ where: { unique_id: platform_unique_id, status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('Platform not found!');
+                });
+            })
+    ],
     forFindingPlatformViaToken: [
         check('token', "Token is required")
             .exists({ checkNull: true, checkFalsy: true })

@@ -16,6 +16,16 @@ export const badge_rules = {
                 });
             })
     ],
+    forFindingBadgeAlt: [
+        check('badge_unique_id', "Badge Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(badge_unique_id => {
+                return BADGES.findOne({ where: { unique_id: badge_unique_id, status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('Badge not found!');
+                });
+            })
+    ],
     forAdding: [
         check('badge', "Badge is required")
             .exists({ checkNull: true, checkFalsy: true })

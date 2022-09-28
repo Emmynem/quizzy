@@ -34,6 +34,16 @@ export const assessments_rules = {
                 });
             })
     ],
+    forFindingAssessmentAlt: [
+        check('assessment_unique_id', "Assessment Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(assessment_unique_id => {
+                return ASSESSMENTS.findOne({ where: { unique_id: assessment_unique_id, status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('Assessment not found!');
+                });
+            })
+    ],
     forAdding: [
         check('platform_unique_id', "Platform Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })

@@ -14,5 +14,15 @@ export const log_rules = {
                     if (!data) return Promise.reject('Log not found!');
                 });
             })
-    ]
+    ],
+    forFindingLogAlt: [
+        check('log_unique_id', "Log Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(log_unique_id => {
+                return LOGS.findOne({ where: { unique_id: log_unique_id, status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('Log not found!');
+                });
+            })
+    ],
 };  
