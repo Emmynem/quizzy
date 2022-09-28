@@ -35,7 +35,7 @@ export default (sequelize, Sequelize) => {
             }
         },
         rating: {
-            type: Sequelize.STRING(10),
+            type: Sequelize.INTEGER(1),
             allowNull: false
         },
         feedback: {
