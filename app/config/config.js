@@ -73,12 +73,18 @@ export const route_methods = ['GET', 'POST', 'PUT', 'DELETE'];
 
 // API Key
 export const api_key_start = "quizzy_";
+export const tag_internal_api_key = "Internal";
+export const tag_external_api_key = "External";
 
 // Platforms Access Url 
 export const platform_access_url = "https://www.quizzy.cloud/platforms/access/";
 
 // PG Age
 export const pg_age = 13;
+
+// App Admin Tag
+export const tag_admin = "Administration";
+export const tag_admin_api_key = "Administrator";
 
 // App Defaults 
 export const max_free_candidates = {

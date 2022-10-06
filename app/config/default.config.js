@@ -554,19 +554,27 @@ export async function createDefaultPlatform() {
 
 export async function createApiKeys() {
 
-    const details = {
-        unique_id: uuidv4(),
-        type: "Internal",
-        api_key: api_key_start + random_uuid(20),
-        status: default_status
-    };
+    const details = [
+        {
+            unique_id: uuidv4(),
+            type: "Administrator",
+            api_key: api_key_start + random_uuid(20),
+            status: default_status
+        },
+        {
+            unique_id: uuidv4(),
+            type: "Internal",
+            api_key: api_key_start + random_uuid(20),
+            status: default_status
+        }
+    ];
 
     const count = await API_KEYS.count();
 
     if (count <= 0) {
         try {
             await db.sequelize.transaction((t) => {
-                const apikey = API_KEYS.create(details, {transaction: t});
+                const apikey = API_KEYS.bulkCreate(details, {transaction: t});
                 return apikey;
             })
             logger.info('Added api keys defaults');

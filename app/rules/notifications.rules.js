@@ -30,6 +30,22 @@ export const notification_rules = {
                 });
             })
     ],
+    forFindingNotificationAlt: [
+        check('unique_id', "Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom((unique_id, { req }) => {
+                return NOTIFICATIONS.findOne({
+                    where: {
+                        unique_id,
+                        user_unique_id: req.query.user_unique_id || req.body.user_unique_id || req.UNIQUE_ID || '',
+                        status: default_status
+                    }
+                }).then(data => {
+                    if (!data) return Promise.reject('Notification not found!');
+                });
+            })
+    ],
     forAdding: [
         check('user_unique_id', "User Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })

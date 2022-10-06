@@ -1,5 +1,5 @@
 import { check } from 'express-validator';
-import { password_options, validate_pg_age_signup, pg_age, default_status } from '../config/config.js';
+import { password_options, validate_pg_age_signup, pg_age, default_status, default_delete_status } from '../config/config.js';
 import db from "../models/index.js";
 
 const USERS = db.users;
@@ -16,6 +16,16 @@ export const user_rules = {
                 });
             })
     ],
+    forFindingUserFasly: [
+        check('unique_id', "Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(unique_id => {
+                return USERS.findOne({ where: { unique_id, status: default_delete_status } }).then(data => {
+                    if (!data) return Promise.reject('User not found!');
+                });
+            })
+    ],
     forFindingUserAlt: [
         check('user_unique_id', "User Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })
@@ -27,6 +37,11 @@ export const user_rules = {
             })
     ],
     forAdding: [
+        check('method', "Method is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isString().isLength({ min: 3, max: 20 })
+            .withMessage("Invalid length (3 - 20) characters"),
         check('firstname', "Firstname is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
@@ -93,6 +108,11 @@ export const user_rules = {
             .isEmail()
             .withMessage('Invalid email format'),
         check('password').exists().isString().withMessage("Password is required"),
+        check('remember_me')
+            .optional({ checkFalsy: false })
+            .bail()
+            .isBoolean()
+            .withMessage("Value should be true or false")
     ],
     forMobileLogin: [
         check('mobile_number', "Mobile number is required")
@@ -101,6 +121,11 @@ export const user_rules = {
             .isMobilePhone()
             .withMessage('Invalid mobile number'),
         check('password').exists().isString().withMessage("Password is required"),
+        check('remember_me')
+            .optional({ checkFalsy: false })
+            .bail()
+            .isBoolean()
+            .withMessage("Value should be true or false")
     ],
     forUpdating: [
         check('firstname', "Firstname is required")
@@ -122,12 +147,12 @@ export const user_rules = {
             .optional({ checkFalsy: false })
             .isMobilePhone()
             .bail()
-            .custom(mobile_number => {
+            .custom((mobile_number, {req}) => {
                 return USERS.findOne({ 
                     where: { 
                         mobile_number,
                         unique_id: {
-                            [Op.ne]: req.query.unique_id || req.body.unique_id || '',
+                            [Op.ne]: req.query.unique_id || req.body.unique_id || req.UNIQUE_ID || '',
                         }
                     } 
                 }).then(data => {
