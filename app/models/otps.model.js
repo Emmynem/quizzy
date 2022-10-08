@@ -1,8 +1,10 @@
 import platformsModel from "./platforms.model.js";
+import platformUsersModel from "./platformUsers.model.js";
 
 export default (sequelize, Sequelize) => {
 
     const platforms = platformsModel(sequelize, Sequelize);
+    const platform_users = platformUsersModel(sequelize, Sequelize);
 
     const otp_2fas = sequelize.define("otp_2fa", {
         id: {
@@ -25,8 +27,12 @@ export default (sequelize, Sequelize) => {
             }
         },
         origin: {
-            type: Sequelize.STRING(255),
+            type: Sequelize.STRING(40),
             allowNull: false,
+            references: {
+                model: platform_users,
+                key: "unique_id"
+            }
         },
         code: {
             type: Sequelize.STRING(6),
@@ -34,6 +40,10 @@ export default (sequelize, Sequelize) => {
         },
         valid: {
             type: Sequelize.BOOLEAN,
+            allowNull: false,
+        },
+        expiration: {
+            type: Sequelize.DATE,
             allowNull: false,
         },
         status: {

@@ -75,7 +75,7 @@ export async function getUserNotification (req, res) {
                         status: default_status
                     }
                 }, { transaction: t });
-            })
+            });
 
             if (notification > 0) {
                 NOTIFICATIONS.findOne({
@@ -140,7 +140,7 @@ export async function addUserNotification(req, res, data) {
                     status: default_status
                 }, { transaction: t });
                 return notification;
-            })
+            });
             logger.info({ unique_id: data.user_unique_id, text: `Notification - ${data.action}` });
         } catch (err) {
             logger.error({ unique_id: data.user_unique_id, text: err.message });
@@ -166,7 +166,7 @@ export async function updateUserNotificationSeen (req, res) {
                         status: default_status
                     }
                 }, { transaction: t });
-            })
+            });
 
             if (notification > 0) {
                 OtherSuccessResponse(res, { unique_id: user_unique_id, text: "Notification read!" });
@@ -197,7 +197,7 @@ export async function removeUserNotification(req, res) {
                         status: default_status
                     }
                 }, { transaction: t });
-            })
+            });
 
             if (notification > 0) {
                 OtherSuccessResponse(res, { unique_id: user_unique_id, text: "Notification deleted!" });

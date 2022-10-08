@@ -1,8 +1,10 @@
+import platformsModel from "./platforms.model.js";
 import platformUsersModel from "./platformUsers.model.js";
 import assessmentsModel from "./assessments.model.js";
 
 export default (sequelize, Sequelize) => {
 
+    const platforms = platformsModel(sequelize, Sequelize);
     const platform_users = platformUsersModel(sequelize, Sequelize);
     const assessments = assessmentsModel(sequelize, Sequelize);
 
@@ -17,6 +19,14 @@ export default (sequelize, Sequelize) => {
             type: Sequelize.STRING(40),
             allowNull: false,
             unique: true
+        },
+        platform_unique_id: {
+            type: Sequelize.STRING(40),
+            allowNull: true,
+            references: {
+                model: platforms,
+                key: "unique_id"
+            }
         },
         platform_user_unique_id: {
             type: Sequelize.STRING(40),

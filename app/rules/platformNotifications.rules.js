@@ -30,6 +30,22 @@ export const platform_notification_rules = {
                 });
             })
     ],
+    forFindingPlatformNotificationAlt: [
+        check('unique_id', "Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom((unique_id, { req }) => {
+                return PLATFORM_NOTIFICATIONS.findOne({
+                    where: {
+                        unique_id,
+                        platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || req.PLATFORM_UNIQUE_ID || '',
+                        status: default_status
+                    }
+                }).then(data => {
+                    if (!data) return Promise.reject('Notification not found!');
+                });
+            })
+    ],
     forAdding: [
         check('platform_unique_id', "Platform Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })

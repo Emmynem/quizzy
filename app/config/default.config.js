@@ -1,12 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
+import fs from "fs";
 import db from "../models/index.js";
 import { logger } from '../common/index.js';
 import { api_key_start, random_uuid, default_status, max_free_candidates, max_free_assessments, 
     max_free_questions, max_free_answers, max_free_platform_users, free_assessment_duration, free_assessment_retakes, 
     max_paid_candidates, max_paid_assessments, max_paid_questions, max_paid_answers, max_paid_platform_users, 
     paid_assessment_duration, paid_assessment_retakes, free_assessment_duration_limit, paid_assessment_duration_limit, 
-    strip_text, platform_access_url, save_document_domain, default_platform_image, access_granted, default_assessment_image } from './config.js';
+    strip_text, platform_access_url, save_document_domain, default_platform_image, access_granted, default_assessment_image, documents_path } from './config.js';
 
 const API_KEYS = db.api_keys;
 const APP_DEFAULTS = db.app_defaults;
@@ -15,6 +16,8 @@ const PLATFORM_USERS = db.platform_users;
 const ASSESSMENTS = db.assessments;
 const QUESTIONS = db.questions;
 const ANSWERS = db.answers;
+
+const { existsSync, mkdirSync } = fs;
 
 export async function createAppDefaults() {
 
@@ -123,7 +126,7 @@ export async function createDefaultPlatform() {
     const platform_unique_id = uuidv4();
     const platform_name = "Quizzy";
     const stripped = strip_text(platform_name);
-    const next_month = moment().day(30).toDate();
+    const next_month = moment().add(4, 'weeks').toDate(); 
     
     const details = {
         unique_id: platform_unique_id,
@@ -151,7 +154,14 @@ export async function createDefaultPlatform() {
                 const platform = PLATFORMS.create(details, { transaction: t });
                 return platform;
             })
-            logger.info('Added platform defaults');
+
+            const folder_name = documents_path + platform_unique_id;
+            if (!existsSync(folder_name)) mkdirSync(folder_name);
+            if (existsSync(folder_name)) {
+                logger.info('Added platform defaults');
+            } else {
+                logger.error('Error creating platform folder');
+            }
         } catch (error) {
             logger.error('Error adding platform defaults');
         }
@@ -210,7 +220,7 @@ export async function createDefaultPlatform() {
         background_image: default_assessment_image,
         candidate_limit: null,
         private: false,
-        start: moment().minute(5).toDate(),
+        start: moment().add(5, 'minute').toDate(),
         end: null,
         duration: 60,
         retakes: 100,
@@ -244,6 +254,7 @@ export async function createDefaultPlatform() {
     const question_details = [
         {
             unique_id: question_unique_id_1,
+            platform_unique_id,
             platform_user_unique_id,
             assessment_unique_id,
             order: 1,
@@ -253,6 +264,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: question_unique_id_2,
+            platform_unique_id,
             platform_user_unique_id,
             assessment_unique_id,
             order: 2,
@@ -262,6 +274,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: question_unique_id_3,
+            platform_unique_id,
             platform_user_unique_id,
             assessment_unique_id,
             order: 3,
@@ -271,6 +284,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: question_unique_id_4,
+            platform_unique_id,
             platform_user_unique_id,
             assessment_unique_id,
             order: 4,
@@ -280,6 +294,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: question_unique_id_5,
+            platform_unique_id,
             platform_user_unique_id,
             assessment_unique_id,
             order: 5,
@@ -289,6 +304,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: question_unique_id_6,
+            platform_unique_id,
             platform_user_unique_id,
             assessment_unique_id,
             order: 6,
@@ -318,6 +334,7 @@ export async function createDefaultPlatform() {
     const answer_details = [
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_1,
             order: 1,
@@ -327,6 +344,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_1,
             order: 2,
@@ -336,6 +354,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_1,
             order: 3,
@@ -345,6 +364,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_1,
             order: 4,
@@ -354,6 +374,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_2,
             order: 1,
@@ -363,6 +384,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_2,
             order: 2,
@@ -372,6 +394,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_2,
             order: 3,
@@ -381,6 +404,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_2,
             order: 4,
@@ -390,6 +414,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_3,
             order: 1,
@@ -399,6 +424,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_3,
             order: 2,
@@ -408,6 +434,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_3,
             order: 3,
@@ -417,6 +444,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_3,
             order: 4,
@@ -426,6 +454,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_4,
             order: 1,
@@ -435,6 +464,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_4,
             order: 2,
@@ -444,6 +474,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_4,
             order: 3,
@@ -453,6 +484,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_4,
             order: 4,
@@ -462,6 +494,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_5,
             order: 1,
@@ -471,6 +504,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_5,
             order: 2,
@@ -480,6 +514,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_5,
             order: 3,
@@ -489,6 +524,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_5,
             order: 4,
@@ -498,6 +534,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_6,
             order: 1,
@@ -507,6 +544,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_6,
             order: 2,
@@ -516,6 +554,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_6,
             order: 3,
@@ -525,6 +564,7 @@ export async function createDefaultPlatform() {
         },
         {
             unique_id: uuidv4(),
+            platform_unique_id,
             platform_user_unique_id,
             question_unique_id: question_unique_id_6,
             order: 4,

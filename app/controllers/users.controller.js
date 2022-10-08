@@ -81,10 +81,9 @@ export function getUser (req, res) {
 };
 
 export async function updateUser (req, res) {
-    // const user_unique_id = req.UNIQUE_ID;
+    const user_unique_id = req.UNIQUE_ID || payload.unique_id || '';
     const errors = validationResult(req);
     const payload = matchedData(req);
-    const user_unique_id = payload.unique_id;
 
     if (!errors.isEmpty()) {
         ValidationError(res, { unique_id: user_unique_id, text: "Validation Error Occured" }, errors.array())
@@ -98,7 +97,7 @@ export async function updateUser (req, res) {
                         status: default_status
                     }
                 }, { transaction: t });
-            })
+            });
 
             if (user > 0) {
                 const notification_data = {
@@ -138,7 +137,7 @@ export async function updateUserEmailVerified (req, res) {
                         status: default_status
                     }
                 }, { transaction: t });
-            })
+            });
 
             if (user > 0) {
                 const notification_data = {
@@ -178,7 +177,7 @@ export async function updateUserMobileNumberVerified (req, res) {
                         status: default_status
                     }
                 }, { transaction: t });
-            })
+            });
 
             if (user > 0) {
                 const notification_data = {
@@ -218,7 +217,7 @@ export async function updateUserAccessGranted (req, res) {
                         status: default_status
                     }
                 }, { transaction: t });
-            })
+            });
 
             if (user > 0) {
                 const notification_data = {
@@ -258,7 +257,7 @@ export async function updateUserAccessSuspended (req, res) {
                         status: default_status
                     }
                 }, { transaction: t });
-            })
+            });
 
             if (user > 0) {
                 const notification_data = {
@@ -298,7 +297,7 @@ export async function updateUserAccessRevoked (req, res) {
                         status: default_status
                     }
                 }, { transaction: t });
-            })
+            });
             
             if (user > 0) {
                 const notification_data = {
@@ -336,7 +335,7 @@ export async function proUserUpgrade (req, res) {
                         status: default_status
                     }
                 }, { transaction: t });
-            })
+            });
 
             if (user > 0) {
                 const notification_data = {
@@ -374,7 +373,7 @@ export async function proUserDowngrade (req, res) {
                         status: default_status
                     }
                 }, { transaction: t });
-            })
+            });
 
             if (user > 0) {
                 const notification_data = {
@@ -411,7 +410,7 @@ export async function removeUser (req, res) {
                         status: default_status
                     }
                 }, { transaction: t });
-            })
+            });
 
             if (user > 0) {
                 SuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User removed successfully!" });
@@ -442,7 +441,7 @@ export async function restoreUser (req, res) {
                         status: default_delete_status
                     }
                 }, { transaction: t });
-            })
+            });
             
             if (user > 0) {
                 SuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User restored successfully!" });
@@ -486,6 +485,22 @@ export async function removeUserPermanently (req, res) {
                     if (!existsSync(folder_name)) { 
                         logger.info(`User directory deleted successfully [${folder_name}]`)
                         OtherSuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: `User deleted permanently! ${affected_rows + action_2} rows affected.` })
+                    };
+                } else {
+                    throw new Error("User not found!");
+                }
+            } else {
+                const action_2 = await db.sequelize.transaction((t) => {
+                    const users = USERS.destroy({ where: { ...payload } }, { transaction: t })
+                    return users;
+                });
+
+                if (action_2 > 0) {
+                    const folder_name = documents_path + payload.unique_id;
+                    if (existsSync(folder_name)) rmdirSync(folder_name);
+                    if (!existsSync(folder_name)) {
+                        logger.info(`User directory deleted successfully [${folder_name}]`)
+                        OtherSuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: `User deleted permanently! ${action_2} rows affected.` })
                     };
                 } else {
                     throw new Error("User not found!");
