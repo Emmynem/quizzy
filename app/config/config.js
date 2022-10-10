@@ -55,6 +55,7 @@ export const default_assessment_image = "https://documents.quizzy.cloud/resource
 export const documents_path = __document_quizzy + "/resources/documents/";
 export const save_document_domain = "https://documents.quizzy.cloud";
 export const save_document_dir = "/resources/documents/";
+export const save_image_dir = "/resources/images/";
 export const save_document_path = save_document_domain + "/resources/documents/";
 export const profile_image_document_name = "Profile Image";
 // End - Paths and document names

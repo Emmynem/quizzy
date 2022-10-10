@@ -7,7 +7,8 @@ import { api_key_start, random_uuid, default_status, max_free_candidates, max_fr
     max_free_questions, max_free_answers, max_free_platform_users, free_assessment_duration, free_assessment_retakes, 
     max_paid_candidates, max_paid_assessments, max_paid_questions, max_paid_answers, max_paid_platform_users, 
     paid_assessment_duration, paid_assessment_retakes, free_assessment_duration_limit, paid_assessment_duration_limit, 
-    strip_text, platform_access_url, save_document_domain, default_platform_image, access_granted, default_assessment_image, documents_path } from './config.js';
+    strip_text, platform_access_url, save_document_domain, default_platform_image, access_granted, default_assessment_image, 
+    documents_path, save_image_dir } from './config.js';
 
 const API_KEYS = db.api_keys;
 const APP_DEFAULTS = db.app_defaults;
@@ -138,7 +139,7 @@ export async function createDefaultPlatform() {
         access_url: platform_access_url + stripped,
         live_api_key: api_key_start + random_uuid(20),
         profile_image_base_url: save_document_domain,
-        profile_image_dir: "/resources/images/",
+        profile_image_dir: save_image_dir,
         profile_image: default_platform_image,
         pro: true,
         pro_expiring: next_month,
@@ -216,7 +217,7 @@ export async function createDefaultPlatform() {
         identifier: random_uuid(5),
         description: "A little quiz about your most favorite movies, music, lifestyle, actors and actresses etc.",
         background_image_base_url: save_document_domain,
-        background_image_dir: "/resources/images/",
+        background_image_dir: save_image_dir,
         background_image: default_assessment_image,
         candidate_limit: null,
         private: false,

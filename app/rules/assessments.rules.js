@@ -2,7 +2,7 @@ import { check } from 'express-validator';
 import moment from 'moment';
 import db from "../models/index.js";
 import { default_status, check_length_TEXT, strip_text, return_default_value, check_pro_expiry, 
-    validate_future_date, validate_future_end_date } from '../config/config.js';
+    validate_future_date, validate_future_end_date, default_delete_status } from '../config/config.js';
 
 const PLATFORMS = db.platforms;
 const ASSESSMENTS = db.assessments;
@@ -34,6 +34,30 @@ export const assessments_rules = {
                 });
             })
     ],
+    forFindingAssessmentFalsy: [
+        check('platform_unique_id', "Platform Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(platform_unique_id => {
+                return PLATFORMS.findOne({ where: { unique_id: platform_unique_id, status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('Platform not found!');
+                });
+            }),
+        check('unique_id', "Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom((unique_id, { req }) => {
+                return ASSESSMENTS.findOne({
+                    where: {
+                        unique_id,
+                        platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '',
+                        status: default_delete_status
+                    }
+                }).then(data => {
+                    if (!data) return Promise.reject('Assessment not found!');
+                });
+            })
+    ],
     forFindingAssessmentAlt: [
         check('assessment_unique_id', "Assessment Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })
@@ -57,7 +81,7 @@ export const assessments_rules = {
             .custom(async platform_unique_id => {
                 const assessment_count = await ASSESSMENTS.count({ where: { platform_unique_id } });
 
-                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], platform_unique_id });
+                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], where: { unique_id: platform_unique_id } });
                 const pro_expiry_date_status = pro_details['dataValues'].pro_expiring ? check_pro_expiry(pro_details['dataValues'].pro_expiring) : true;
 
                 const _max_assessments = await APP_DEFAULTS.findOne({ where: { criteria: { [Op.like]: `%${pro_expiry_date_status === true ? "Max Free Assessments" : "Max Paid Assessments"}` } } });
@@ -98,7 +122,7 @@ export const assessments_rules = {
             .withMessage("Limit invalid")
             .bail()
             .custom(async (candidate_limit, {req}) => {
-                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' });
+                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], where: { unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' } });
                 const pro_expiry_date_status = pro_details['dataValues'].pro_expiring ? check_pro_expiry(pro_details['dataValues'].pro_expiring) : true;
 
                 const _max_candidates = await APP_DEFAULTS.findOne({ where: { criteria: { [Op.like]: `%${pro_expiry_date_status === true ? "Max Free Candidates" : "Max Paid Candidates"}` } } });
@@ -145,7 +169,7 @@ export const assessments_rules = {
             .withMessage("Duration invalid, e.g. 30, 60 [1 hr], 90 [1 hr 30 mins] etc")
             .bail()
             .custom(async (duration, { req }) => {
-                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' });
+                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], where: { unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' } });
                 const pro_expiry_date_status = pro_details['dataValues'].pro_expiring ? check_pro_expiry(pro_details['dataValues'].pro_expiring) : true;
                 
                 const _duration_enabled = await APP_DEFAULTS.findOne({ where: { criteria: { [Op.like]: `%${pro_expiry_date_status === true ? "Free Assessment Duration" : "Paid Assessment Duration"}` } } });
@@ -154,7 +178,7 @@ export const assessments_rules = {
             })
             .bail()
             .custom(async (duration, { req }) => {
-                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' });
+                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], where: { unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' } });
                 const pro_expiry_date_status = pro_details['dataValues'].pro_expiring ? check_pro_expiry(pro_details['dataValues'].pro_expiring) : true;
 
                 const _duration_limit = await APP_DEFAULTS.findOne({ where: { criteria: { [Op.like]: `%${pro_expiry_date_status === true ? "Free Assessment Duration Limit" : "Paid Assessment Duration Limit"}` } } });
@@ -175,7 +199,7 @@ export const assessments_rules = {
             .withMessage("Retake invalid, 1 - 100")
             .bail()
             .custom(async (retakes, { req }) => {
-                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' });
+                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], where: { unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' } });
                 const pro_expiry_date_status = pro_details['dataValues'].pro_expiring ? check_pro_expiry(pro_details['dataValues'].pro_expiring) : true;
 
                 const _retakes_enabled = await APP_DEFAULTS.findOne({ where: { criteria: { [Op.like]: `%${pro_expiry_date_status === true ? "Free Assessment Retakes" : "Paid Assessment Retakes"}` } } });
@@ -254,7 +278,7 @@ export const assessments_rules = {
             .withMessage("Limit invalid")
             .bail()
             .custom(async (candidate_limit, { req }) => {
-                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' });
+                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], where: { unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' } });
                 const pro_expiry_date_status = pro_details['dataValues'].pro_expiring ? check_pro_expiry(pro_details['dataValues'].pro_expiring) : true;
 
                 const _max_candidates = await APP_DEFAULTS.findOne({ where: { criteria: { [Op.like]: `%${pro_expiry_date_status === true ? "Max Free Candidates" : "Max Paid Candidates"}` } } });
@@ -274,7 +298,7 @@ export const assessments_rules = {
             .withMessage("Duration invalid, e.g. 30, 60 [1 hr], 90 [1 hr 30 mins] etc")
             .bail()
             .custom(async (duration, { req }) => {
-                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' });
+                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], where: { unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' } });
                 const pro_expiry_date_status = pro_details['dataValues'].pro_expiring ? check_pro_expiry(pro_details['dataValues'].pro_expiring) : true;
 
                 const _duration_enabled = await APP_DEFAULTS.findOne({ where: { criteria: { [Op.like]: `%${pro_expiry_date_status === true ? "Free Assessment Duration" : "Paid Assessment Duration"}` } } });
@@ -283,7 +307,7 @@ export const assessments_rules = {
             })
             .bail()
             .custom(async (duration, { req }) => {
-                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' });
+                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], where: { unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' } });
                 const pro_expiry_date_status = pro_details['dataValues'].pro_expiring ? check_pro_expiry(pro_details['dataValues'].pro_expiring) : true;
 
                 const _duration_limit = await APP_DEFAULTS.findOne({ where: { criteria: { [Op.like]: `%${pro_expiry_date_status === true ? "Free Assessment Duration Limit" : "Paid Assessment Duration Limit"}` } } });
@@ -304,7 +328,7 @@ export const assessments_rules = {
             .withMessage("Retake invalid, 1 - 100")
             .bail()
             .custom(async (retakes, { req }) => {
-                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' });
+                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], where: { unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' } });
                 const pro_expiry_date_status = pro_details['dataValues'].pro_expiring ? check_pro_expiry(pro_details['dataValues'].pro_expiring) : true;
 
                 const _retakes_enabled = await APP_DEFAULTS.findOne({ where: { criteria: { [Op.like]: `%${pro_expiry_date_status === true ? "Free Assessment Retakes" : "Paid Assessment Retakes"}` } } });

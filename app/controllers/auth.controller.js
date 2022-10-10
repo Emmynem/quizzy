@@ -6,7 +6,7 @@ import fs from "fs";
 import { v4 as uuidv4 } from 'uuid';
 import { ServerError, SuccessResponse, CreationSuccessResponse, ValidationError, UnauthorizedError, ForbiddenError, NotFoundError, BadRequestError } from '../common/index.js';
 import { access_granted, access_revoked, access_suspended, secret, default_status, false_status, default_profile_image, documents_path, unverified_status, strip_text, 
-    random_uuid, platform_access_url, api_key_start, save_document_domain, default_platform_image, super_admin_routes, random_numbers, true_status, validate_future_end_date } from '../config/config.js';
+    random_uuid, platform_access_url, api_key_start, save_document_domain, default_platform_image, super_admin_routes, random_numbers, true_status, validate_future_end_date, save_image_dir } from '../config/config.js';
 import db from "../models/index.js";
 import { addUserNotification } from './notifications.controller.js';
 import { addPlatformNotification } from './platformNotifications.controller.js';
@@ -37,6 +37,8 @@ export async function userSignUp(req, res) {
                     email_verification: false_status,
                     mobile_number_verification: false_status,
                     user_private: hashSync(payload.password, 8),
+                    profile_image_base_url: save_document_domain,
+                    profile_image_dir: save_image_dir,
                     profile_image: default_profile_image,
                     pro: false_status,
                     access: access_granted,
@@ -202,7 +204,7 @@ export async function platformSignUp(req, res) {
                     access_url: platform_access_url + stripped,
                     live_api_key: api_key_start + random_uuid(20),
                     profile_image_base_url: save_document_domain,
-                    profile_image_dir: "/resources/images/",
+                    profile_image_dir: save_image_dir,
                     profile_image: default_platform_image,
                     pro: false_status,
                     pro_expiring: null,
@@ -450,7 +452,7 @@ export async function platformUserVerifyOtp(req, res) {
                             })
 
                             if (validate_otp > 0) {
-                                const token = sign({ unique_id: platform_user.unique_id }, secret, {
+                                const token = sign({ platform_user_unique_id: platform_user.unique_id }, secret, {
                                     expiresIn: payload.remember_me ? 2592000 /* 30 days */ : 86400 // 24 hours
                                 });
 
@@ -547,7 +549,7 @@ export async function platformUserVerifyOtp(req, res) {
                             })
 
                             if (validate_otp > 0) {
-                                const token = sign({ unique_id: platform_user.unique_id }, secret, {
+                                const token = sign({ platform_user_unique_id: platform_user.unique_id }, secret, {
                                     expiresIn: payload.remember_me ? 2592000 /* 30 days */ : 86400 // 24 hours
                                 });
 

@@ -46,6 +46,7 @@ const verifyPlatformToken = (req, res, next) => {
                 UnauthorizedError(res, "Unauthorized!", null);
             } else {
                 req.PLATFORM_UNIQUE_ID = decoded.platform_unique_id;
+                req.body.platform_unique_id = decoded.platform_unique_id;
                 next();
             }
         });
@@ -62,6 +63,7 @@ const verifyPlatformUserToken = (req, res, next) => {
                 UnauthorizedError(res, "Unauthorized!", null);
             } else {
                 req.PLATFORM_USER_UNIQUE_ID = decoded.platform_user_unique_id;
+                req.body.platform_user_unique_id = decoded.platform_user_unique_id;
                 next();
             }
         });
@@ -121,6 +123,7 @@ const isPlatformUser = (req, res, next) => {
             ForbiddenError(res, err, null);
         } else {
             req.PLATFORM_UNIQUE_ID = platform_user.platform_unique_id;
+            req.body.platform_unique_id = platform_user.platform_unique_id;
             next();
         }
     });
