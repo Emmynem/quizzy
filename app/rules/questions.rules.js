@@ -1,6 +1,6 @@
 import { check } from 'express-validator';
 import db from "../models/index.js";
-import { default_status, check_length_TEXT, return_default_value, check_pro_expiry } from '../config/config.js';
+import { default_status, check_length_TEXT, return_default_value, check_pro_expiry, default_delete_status } from '../config/config.js';
 
 const PLATFORMS = db.platforms;
 const QUESTIONS = db.questions;
@@ -13,8 +13,8 @@ export const questions_rules = {
         check('assessment_unique_id', "Assessment Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
-            .custom(assessment_unique_id => {
-                return ASSESSMENTS.findOne({ where: { unique_id: assessment_unique_id, status: default_status } }).then(data => {
+            .custom((assessment_unique_id, { req }) => {
+                return ASSESSMENTS.findOne({ where: { unique_id: assessment_unique_id, platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '', status: default_status } }).then(data => {
                     if (!data) return Promise.reject('Assessment not found!');
                 });
             }),
@@ -26,7 +26,33 @@ export const questions_rules = {
                     where: {
                         unique_id,
                         assessment_unique_id: req.query.assessment_unique_id || req.body.assessment_unique_id || '',
+                        platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '',
                         status: default_status
+                    }
+                }).then(data => {
+                    if (!data) return Promise.reject('Question not found!');
+                });
+            })
+    ],
+    forFindingQuestionFalsy: [
+        check('assessment_unique_id', "Assessment Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom((assessment_unique_id, { req }) => {
+                return ASSESSMENTS.findOne({ where: { unique_id: assessment_unique_id, platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '', status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('Assessment not found!');
+                });
+            }),
+        check('unique_id', "Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom((unique_id, { req }) => {
+                return QUESTIONS.findOne({
+                    where: {
+                        unique_id,
+                        assessment_unique_id: req.query.assessment_unique_id || req.body.assessment_unique_id || '',
+                        platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '',
+                        status: default_delete_status
                     }
                 }).then(data => {
                     if (!data) return Promise.reject('Question not found!');
@@ -54,9 +80,9 @@ export const questions_rules = {
             })
             .bail()
             .custom(async (assessment_unique_id, {req}) => {
-                const question_count = await QUESTIONS.count({ where: { assessment_unique_id } });
+                const question_count = await QUESTIONS.count({ where: { assessment_unique_id, platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' } });
 
-                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' });
+                const pro_details = await PLATFORMS.findOne({ attributes: ['pro', 'pro_expiring'], where: { unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' } });
                 const pro_expiry_date_status = pro_details['dataValues'].pro_expiring ? check_pro_expiry(pro_details['dataValues'].pro_expiring) : true;
 
                 const _max_questions = await APP_DEFAULTS.findOne({ where: { criteria: { [Op.like]: `%${pro_expiry_date_status === true ? "Max Free Questions" : "Max Paid Questions"}` } } });
@@ -79,30 +105,7 @@ export const questions_rules = {
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
             .isLength({ min: 3, max: check_length_TEXT })
-            .withMessage(`Invalid length (3 - ${check_length_TEXT}) characters`),
-        check('multiple_answer', "Indicate if question has multiple answers")
-            .exists({ checkNull: true, checkFalsy: false })
-            .bail()
-            .isBoolean()
-            .withMessage("Value should be true or false"),
-        check('order', "Order is required")
-            .exists({ checkNull: true, checkFalsy: true })
-            .bail()
-            .isInt()
-            .withMessage("Invalid order, only numbers allowed")
-            .bail()
-            .custom(order => {
-                if (order === 0) return false;
-                else if (order < 0) return false;
-                else return true;
-            })
-            .withMessage("Invalid order")
-            .bail()
-            .custom(async (order, { req }) => {
-                const question_count = await QUESTIONS.count({ where: { assessment_unique_id: req.query.assessment_unique_id || req.body.assessment_unique_id || '' } });
-                if (question_count === 0) return Promise.reject('No questions available to order');
-                if (order > question_count) return Promise.reject(`Invalid order range 1 - ${question_count}`);
-            })
+            .withMessage(`Invalid length (3 - ${check_length_TEXT}) characters`)
     ],
     forUpdatingMultipleAnswer: [
         check('multiple_answer', "Indicate if question has multiple answers")
@@ -126,7 +129,10 @@ export const questions_rules = {
             .withMessage("Invalid order")
             .bail()
             .custom(async (order, { req }) => {
-                const question_count = await QUESTIONS.count({ where: { assessment_unique_id: req.query.assessment_unique_id || req.body.assessment_unique_id || '' } });
+                const question_count = await QUESTIONS.count({ where: { 
+                    assessment_unique_id: req.query.assessment_unique_id || req.body.assessment_unique_id || '', 
+                    platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '' 
+                } });
                 if (question_count === 0) return Promise.reject('No questions available to order');
                 if (order > question_count) return Promise.reject(`Invalid order range 1 - ${question_count}`);
             })

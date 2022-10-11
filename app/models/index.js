@@ -87,6 +87,9 @@ db.assessments.hasMany(db.platform_users, { foreignKey: 'unique_id', sourceKey: 
 db.platform_users.belongsTo(db.assessments, { foreignKey: 'unique_id', targetKey: 'platform_user_unique_id' });
 
 //    - Questions Associations
+db.questions.hasMany(db.platforms, { foreignKey: 'unique_id', sourceKey: 'platform_unique_id' });
+db.platforms.belongsTo(db.questions, { foreignKey: 'unique_id', targetKey: 'platform_unique_id' });
+
 db.questions.hasMany(db.assessments, { foreignKey: 'unique_id', sourceKey: 'assessment_unique_id' });
 db.assessments.belongsTo(db.questions, { foreignKey: 'unique_id', targetKey: 'assessment_unique_id' });
 
@@ -94,6 +97,9 @@ db.questions.hasMany(db.platform_users, { foreignKey: 'unique_id', sourceKey: 'p
 db.platform_users.belongsTo(db.questions, { foreignKey: 'unique_id', targetKey: 'platform_user_unique_id' });
 
 //    - Answers Associations
+db.answers.hasMany(db.platforms, { foreignKey: 'unique_id', sourceKey: 'platform_unique_id' });
+db.platforms.belongsTo(db.answers, { foreignKey: 'unique_id', targetKey: 'platform_unique_id' });
+
 db.answers.hasMany(db.questions, { foreignKey: 'unique_id', sourceKey: 'question_unique_id' });
 db.questions.belongsTo(db.answers, { foreignKey: 'unique_id', targetKey: 'question_unique_id' });
 
@@ -154,5 +160,8 @@ db.users.belongsTo(db.user_badges, { foreignKey: 'unique_id', targetKey: 'user_u
 //    - OTPs Associations
 db.otps.hasMany(db.platforms, { foreignKey: 'unique_id', sourceKey: 'platform_unique_id' });
 db.platforms.belongsTo(db.otps, { foreignKey: 'unique_id', targetKey: 'platform_unique_id' });
+
+db.otps.hasMany(db.platform_users, { foreignKey: 'unique_id', sourceKey: 'origin' });
+db.platform_users.belongsTo(db.otps, { foreignKey: 'unique_id', targetKey: 'origin' });
 
 export default db;
