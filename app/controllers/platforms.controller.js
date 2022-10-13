@@ -1,7 +1,7 @@
 import { validationResult, matchedData } from 'express-validator';
 import moment from 'moment';
 import fs from "fs";
-import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, logger } from '../common/index.js';
+import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, BadRequestError, logger } from '../common/index.js';
 import { access_granted, access_revoked, access_suspended, default_delete_status, default_status, false_status, true_status, tag_admin, documents_path } from '../config/config.js';
 import db from "../models/index.js";
 import { addPlatformNotification } from './platformNotifications.controller.js';
@@ -107,7 +107,7 @@ export async function updatePlatform(req, res) {
                 addPlatformNotification(req, res, notification_data);
                 SuccessResponse(res, { unique_id: platform_unique_id, text: "Platform details updated successfully!" }, platform);
             } else {
-                throw new Error("Platform not found!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Platform not found!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -162,7 +162,7 @@ export async function updatePlatformAccessGranted(req, res) {
 
                 SuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "Platform's access was granted successfully!" });
             } else {
-                throw new Error("Platform access already granted!");
+                BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "Platform access already granted!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: err.message }, null);
@@ -217,7 +217,7 @@ export async function updatePlatformAccessSuspended(req, res) {
 
                 SuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "Platform's access was suspended successfully!" });
             } else {
-                throw new Error("Platform access already suspended!");
+                BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "Platform access already suspended!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: err.message }, null);
@@ -272,7 +272,7 @@ export async function updatePlatformAccessRevoked(req, res) {
 
                 SuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "Platform's access was revoked successfully!" });
             } else {
-                throw new Error("Platform access already revoked!");
+                BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "Platform access already revoked!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: err.message }, null);
@@ -311,7 +311,7 @@ export async function proPlatformUpgrade(req, res) {
 
                 SuccessResponse(res, { unique_id: payload.unique_id, text: "Platform upgraded to pro successfully!" });
             } else {
-                throw new Error("Platform account is actively upgraded!");
+                BadRequestError(res, { unique_id: payload.unique_id, text: "Platform account is actively upgraded!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: payload.unique_id, text: err.message }, null);
@@ -350,7 +350,7 @@ export async function proPlatformDowngrade(req, res) {
 
                 SuccessResponse(res, { unique_id: payload.unique_id, text: "Platform downgraded from pro successfully!" });
             } else {
-                throw new Error("Platform account is actively downgraded!");
+                BadRequestError(res, { unique_id: payload.unique_id, text: "Platform account is actively downgraded!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: payload.unique_id, text: err.message }, null);
@@ -425,7 +425,7 @@ export async function removePlatform(req, res) {
 
                 SuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "Platform removed successfully!" });
             } else {
-                throw new Error("Platform not found!");
+                BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "Platform not found!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: err.message }, null);
@@ -500,7 +500,7 @@ export async function restorePlatform(req, res) {
                 
                 SuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "Platform restored successfully!" });
             } else {
-                throw new Error("Platform not found!");
+                BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "Platform not found!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: err.message }, null);
@@ -540,7 +540,7 @@ export async function removePlatformPermanently(req, res) {
                         OtherSuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: `Platform deleted permanently! ${affected_rows + action_2} rows affected.` })
                     };
                 } else {
-                    throw new Error("Platform not found!");
+                    BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "Platform not found!" }, null);
                 }
             } else {
                 const action_2 = await db.sequelize.transaction((t) => {
@@ -556,7 +556,7 @@ export async function removePlatformPermanently(req, res) {
                         OtherSuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: `Platform deleted permanently! ${action_2} rows affected.` })
                     };
                 } else {
-                    throw new Error("Platform not found!");
+                    BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "Platform not found!" }, null);
                 }
             }
         } catch (err) {

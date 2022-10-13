@@ -1,6 +1,6 @@
 import { validationResult, matchedData } from 'express-validator';
 import { v4 as uuidv4 } from 'uuid';
-import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, CreationSuccessResponse, logger } from '../common/index.js';
+import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, CreationSuccessResponse, BadRequestError, logger } from '../common/index.js';
 import { default_delete_status, default_status, tag_admin } from '../config/config.js';
 import db from "../models/index.js";
 import { addPlatformNotification } from './platformNotifications.controller.js';
@@ -272,7 +272,7 @@ export async function updatePlatformAssessmentQuestionDetails(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Question was updated successfully!" });
             } else {
-                throw new Error("Error updating question details!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error updating question details!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -313,7 +313,7 @@ export async function updatePlatformAssessmentQuestionCriteria(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Question was updated successfully!" });
             } else {
-                throw new Error("Error updating question criteria!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error updating question criteria!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -375,9 +375,9 @@ export async function updatePlatformAssessmentQuestionOrder(req, res) {
                     addPlatformNotification(req, res, platform_notification_data);
                     OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Question was reordered successfully!" });
                 } else {
-                    throw new Error("Error reordering questions!");
+                    BadRequestError(res, { unique_id: platform_unique_id, text: "Error reordering questions!" }, null);
                 }
-            } else if (replace_question['dataValues'].unique_id === payload.unique_id) {
+            } else if (replace_question.unique_id === payload.unique_id) {
                 const platform_notification_data = {
                     platform_unique_id,
                     type: "Question",
@@ -389,10 +389,10 @@ export async function updatePlatformAssessmentQuestionOrder(req, res) {
                 const reorder_replace_question = await db.sequelize.transaction((t) => {
                     return QUESTIONS.update({
                         platform_user_unique_id,
-                        order: recent_question['dataValues'].order
+                        order: recent_question.order
                     }, {
                         where: {
-                            unique_id: replace_question['dataValues'].unique_id,
+                            unique_id: replace_question.unique_id,
                             platform_unique_id,
                             assessment_unique_id: payload.assessment_unique_id,
                             status: default_status
@@ -402,10 +402,10 @@ export async function updatePlatformAssessmentQuestionOrder(req, res) {
                 const reorder_recent_question = await db.sequelize.transaction((t) => {
                     return QUESTIONS.update({
                         platform_user_unique_id,
-                        order: replace_question['dataValues'].order
+                        order: replace_question.order
                     }, {
                         where: {
-                            unique_id: recent_question['dataValues'].unique_id,
+                            unique_id: recent_question.unique_id,
                             platform_unique_id,
                             assessment_unique_id: payload.assessment_unique_id,
                             status: default_status
@@ -422,10 +422,10 @@ export async function updatePlatformAssessmentQuestionOrder(req, res) {
                     addPlatformNotification(req, res, platform_notification_data);
                     OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Question was reordered successfully!" });
                 } else {
-                    throw new Error("Error reordering questions!");
+                    BadRequestError(res, { unique_id: platform_unique_id, text: "Error reordering questions!" }, null);
                 }
             } else {
-                throw new Error("Error getting replacement question!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error getting replacement question!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -466,7 +466,7 @@ export async function removePlatformAssessmentQuestion(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Question was removed successfully!" });
             } else {
-                throw new Error("Error removing question!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error removing question!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -507,7 +507,7 @@ export async function restorePlatformAssessmentQuestion(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Question was restored successfully!" });
             } else {
-                throw new Error("Error restoring question!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error restoring question!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -545,7 +545,7 @@ export async function deletePlatformAssessmentQuestion(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Question was deleted successfully!" });
             } else {
-                throw new Error("Error deleting question!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error deleting question!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);

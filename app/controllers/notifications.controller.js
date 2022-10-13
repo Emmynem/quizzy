@@ -1,6 +1,6 @@
 import { validationResult, matchedData } from 'express-validator';
 import { v4 as uuidv4 } from 'uuid';
-import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, logger } from '../common/index.js';
+import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, BadRequestError, logger } from '../common/index.js';
 import { check_length_TEXT, default_delete_status, default_status, false_status, tag_admin, true_status } from '../config/config.js';
 import db from "../models/index.js";
 
@@ -93,7 +93,7 @@ export async function getUserNotification (req, res) {
                     }
                 })
             } else {
-                throw new Error("Notification not found!");
+                BadRequestError(res, { unique_id: user_unique_id, text: "Notification not found!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: user_unique_id, text: err.message }, null);
@@ -171,7 +171,7 @@ export async function updateUserNotificationSeen (req, res) {
             if (notification > 0) {
                 OtherSuccessResponse(res, { unique_id: user_unique_id, text: "Notification read!" });
             } else {
-                throw new Error("Notification not found!");
+                BadRequestError(res, { unique_id: user_unique_id, text: "Notification not found!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: user_unique_id, text: err.message }, null);
@@ -202,7 +202,7 @@ export async function removeUserNotification(req, res) {
             if (notification > 0) {
                 OtherSuccessResponse(res, { unique_id: user_unique_id, text: "Notification deleted!" });
             } else {
-                throw new Error("Notification not found!");
+                BadRequestError(res, { unique_id: user_unique_id, text: "Notification not found!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: user_unique_id, text: err.message }, null);

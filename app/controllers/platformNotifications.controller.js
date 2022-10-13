@@ -1,6 +1,6 @@
 import { validationResult, matchedData } from 'express-validator';
 import { v4 as uuidv4 } from 'uuid';
-import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, logger } from '../common/index.js';
+import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, BadRequestError, logger } from '../common/index.js';
 import { check_length_TEXT, default_delete_status, default_status, false_status, tag_admin, true_status } from '../config/config.js';
 import db from "../models/index.js";
 
@@ -93,7 +93,7 @@ export async function getPlatformNotification(req, res) {
                     }
                 })
             } else {
-                throw new Error("Platform notification not found!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Platform notification not found!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -171,7 +171,7 @@ export async function updatePlatformNotificationSeen(req, res) {
             if (platform_notification > 0) {
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Platform notification read!" });
             } else {
-                throw new Error("Platform notification not found!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Platform notification not found!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -202,7 +202,7 @@ export async function removePlatformNotification(req, res) {
             if (platform_notification > 0) {
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Platform notification deleted!" });
             } else {
-                throw new Error("Platform notification not found!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Platform notification not found!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);

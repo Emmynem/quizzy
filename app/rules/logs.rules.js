@@ -9,8 +9,8 @@ export const log_rules = {
         check('unique_id', "Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
-            .custom(unique_id => {
-                return LOGS.findOne({ where: { unique_id, status: default_status } }).then(data => {
+            .custom((unique_id, { req }) => {
+                return LOGS.findOne({ where: { unique_id, status: default_status, user_unique_id: req.query.user_unique_id || req.body.user_unique_id || '', } }).then(data => {
                     if (!data) return Promise.reject('Log not found!');
                 });
             })

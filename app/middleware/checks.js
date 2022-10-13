@@ -19,8 +19,12 @@ const verifyToken = (req, res, next) => {
             if (err) {
                 UnauthorizedError(res, "Unauthorized!", null);
             } else {
-                req.UNIQUE_ID = decoded.unique_id;
-                next();
+                if (!decoded.unique_id) {
+                    UnauthorizedError(res, "Invalid token!", null);
+                } else {
+                    req.UNIQUE_ID = decoded.unique_id;
+                    next();
+                }
             }
         });
     }
@@ -45,9 +49,13 @@ const verifyPlatformToken = (req, res, next) => {
             if (err) {
                 UnauthorizedError(res, "Unauthorized!", null);
             } else {
-                req.PLATFORM_UNIQUE_ID = decoded.platform_unique_id;
-                req.body.platform_unique_id = decoded.platform_unique_id;
-                next();
+                if (!decoded.platform_unique_id) {
+                    UnauthorizedError(res, "Invalid token!", null);
+                } else {
+                    req.PLATFORM_UNIQUE_ID = decoded.platform_unique_id;
+                    req.body.platform_unique_id = decoded.platform_unique_id;
+                    next();
+                }
             }
         });
     }
@@ -62,9 +70,13 @@ const verifyPlatformUserToken = (req, res, next) => {
             if (err) {
                 UnauthorizedError(res, "Unauthorized!", null);
             } else {
-                req.PLATFORM_USER_UNIQUE_ID = decoded.platform_user_unique_id;
-                req.body.platform_user_unique_id = decoded.platform_user_unique_id;
-                next();
+                if (!decoded.platform_user_unique_id) {
+                    UnauthorizedError(res, "Invalid token!", null);
+                } else {
+                    req.PLATFORM_USER_UNIQUE_ID = decoded.platform_user_unique_id;
+                    req.body.platform_user_unique_id = decoded.platform_user_unique_id;
+                    next();
+                }
             }
         });
     }
@@ -84,6 +96,7 @@ const isUser = (req, res, next) => {
             const err = user.access === access_suspended ? "Access is suspended" : "Access is revoked";
             ForbiddenError(res, err, null);
         } else {
+            req.body.user_unique_id = user.unique_id;
             next();
         }
     });

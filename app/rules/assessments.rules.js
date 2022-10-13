@@ -191,8 +191,7 @@ export const assessments_rules = {
             .isInt()
             .bail()
             .custom(retakes => {
-                if (retakes === 0) return false;
-                else if (retakes < 0) return false;
+                if (retakes < 0) return false;
                 else if (retakes > 100) return false;
                 else return true;
             })
@@ -320,8 +319,7 @@ export const assessments_rules = {
             .isInt()
             .bail()
             .custom(retakes => {
-                if (retakes === 0) return false;
-                else if (retakes < 0) return false;
+                if (retakes < 0) return false;
                 else if (retakes > 100) return false;
                 else return true;
             })

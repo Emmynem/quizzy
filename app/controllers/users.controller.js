@@ -1,7 +1,7 @@
 import { validationResult, matchedData } from 'express-validator';
 import moment from 'moment';
 import fs from "fs";
-import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, logger } from '../common/index.js';
+import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, BadRequestError, logger } from '../common/index.js';
 import { access_granted, access_revoked, access_suspended, default_delete_status, default_status, false_status, true_status, tag_admin, documents_path } from '../config/config.js';
 import db from "../models/index.js";
 import { addUserNotification } from './notifications.controller.js';
@@ -108,7 +108,7 @@ export async function updateUser (req, res) {
                 addUserNotification(req, res, notification_data);
                 SuccessResponse(res, { unique_id: user_unique_id, text: "User details updated successfully!" }, user);
             } else {
-                throw new Error("User not found!");
+                BadRequestError(res, { unique_id: user_unique_id, text: "User not found!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: user_unique_id, text: err.message }, null);
@@ -148,7 +148,7 @@ export async function updateUserEmailVerified (req, res) {
                 addUserNotification(req, res, notification_data);
                 OtherSuccessResponse(res, { unique_id: payload.unique_id, text: "User email verified successfully!" });
             } else {
-                throw new Error("User email verified already!");
+                BadRequestError(res, { unique_id: payload.unique_id, text: "User email verified already!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: payload.unique_id, text: err.message }, null);
@@ -188,7 +188,7 @@ export async function updateUserMobileNumberVerified (req, res) {
                 addUserNotification(req, res, notification_data);
                 OtherSuccessResponse(res, { unique_id: payload.unique_id, text: "User mobile number verified successfully!" });
             } else {
-                throw new Error("User mobile number verified already!");
+                BadRequestError(res, { unique_id: payload.unique_id, text: "User mobile number verified already!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: payload.unique_id, text: err.message }, null);
@@ -228,7 +228,7 @@ export async function updateUserAccessGranted (req, res) {
                 addUserNotification(req, res, notification_data);
                 SuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User's access was granted successfully!" });
             } else {
-                throw new Error("User access already granted!");
+                BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User access already granted!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: err.message }, null);
@@ -268,7 +268,7 @@ export async function updateUserAccessSuspended (req, res) {
                 addUserNotification(req, res, notification_data);
                 SuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User's access was suspended successfully!" });
             } else {
-                throw new Error("User access already suspended!");
+                BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User access already suspended!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: err.message }, null);
@@ -308,7 +308,7 @@ export async function updateUserAccessRevoked (req, res) {
                 addUserNotification(req, res, notification_data);
                 SuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User's access was revoked successfully!" });
             } else {
-                throw new Error("User access already revoked!");
+                BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User access already revoked!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: err.message }, null);
@@ -346,7 +346,7 @@ export async function proUserUpgrade (req, res) {
                 addUserNotification(req, res, notification_data);
                 SuccessResponse(res, { unique_id: payload.unique_id, text: "User upgraded to pro successfully!" });
             } else {
-                throw new Error("User account is actively upgraded!");
+                BadRequestError(res, { unique_id: payload.unique_id, text: "User account is actively upgraded!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: payload.unique_id, text: err.message }, null);
@@ -384,7 +384,7 @@ export async function proUserDowngrade (req, res) {
                 addUserNotification(req, res, notification_data);
                 SuccessResponse(res, { unique_id: payload.unique_id, text: "User downgraded from pro successfully!" });
             } else {
-                throw new Error("User account is actively downgraded!");
+                BadRequestError(res, { unique_id: payload.unique_id, text: "User account is actively downgraded!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: payload.unique_id, text: err.message }, null);
@@ -415,7 +415,7 @@ export async function removeUser (req, res) {
             if (user > 0) {
                 SuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User removed successfully!" });
             } else {
-                throw new Error("User not found!");
+                BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User not found!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: err.message }, null);
@@ -446,7 +446,7 @@ export async function restoreUser (req, res) {
             if (user > 0) {
                 SuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User restored successfully!" });
             } else {
-                throw new Error("User not found!");
+                BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User not found!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: err.message }, null);
@@ -487,7 +487,7 @@ export async function removeUserPermanently (req, res) {
                         OtherSuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: `User deleted permanently! ${affected_rows + action_2} rows affected.` })
                     };
                 } else {
-                    throw new Error("User not found!");
+                    BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User not found!" }, null);
                 }
             } else {
                 const action_2 = await db.sequelize.transaction((t) => {
@@ -503,7 +503,7 @@ export async function removeUserPermanently (req, res) {
                         OtherSuccessResponse(res, { unique_id: tag_admin + " | " + payload.unique_id, text: `User deleted permanently! ${action_2} rows affected.` })
                     };
                 } else {
-                    throw new Error("User not found!");
+                    BadRequestError(res, { unique_id: tag_admin + " | " + payload.unique_id, text: "User not found!" }, null);
                 }
             }
         } catch (err) {

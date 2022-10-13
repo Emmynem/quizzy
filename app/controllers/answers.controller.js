@@ -1,6 +1,6 @@
 import { validationResult, matchedData } from 'express-validator';
 import { v4 as uuidv4 } from 'uuid';
-import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, CreationSuccessResponse, logger } from '../common/index.js';
+import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, CreationSuccessResponse, BadRequestError, logger } from '../common/index.js';
 import { default_delete_status, default_status, false_status, tag_admin, true_status } from '../config/config.js';
 import db from "../models/index.js";
 import { addPlatformNotification } from './platformNotifications.controller.js';
@@ -273,7 +273,7 @@ export async function updatePlatformQuestionAnswerDetails(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Answer was updated successfully!" });
             } else {
-                throw new Error("Error updating answer details!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error updating answer details!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -333,14 +333,14 @@ export async function updatePlatformQuestionAnswerCriteria(req, res) {
                         addPlatformNotification(req, res, platform_notification_data);
                         OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Answer was updated successfully!" });
                     } else {
-                        throw new Error("Error updating answer criteria!");
+                        BadRequestError(res, { unique_id: platform_unique_id, text: "Error updating answer criteria!" }, null);
                     }
                 } else {
-                    throw new Error("Error updating answer criteria, no answer selected for question!");
+                    BadRequestError(res, { unique_id: platform_unique_id, text: "Error updating answer criteria, no answer selected for question!" }, null);
                 }
             } else {
                 if (!question_details['dataValues'].multiple_answer && answer_details) {
-                    throw new Error("Error updating answer criteria, question doesn't accept multiple answers!");
+                    BadRequestError(res, { unique_id: platform_unique_id, text: "Error updating answer criteria, question doesn't accept multiple answers!" }, null);
                 } else if (question_details['dataValues'].multiple_answer) {
                     const answer = await db.sequelize.transaction((t) => {
                         return ANSWERS.update({
@@ -365,7 +365,7 @@ export async function updatePlatformQuestionAnswerCriteria(req, res) {
                         addPlatformNotification(req, res, platform_notification_data);
                         OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Answer was updated successfully!" });
                     } else {
-                        throw new Error("Error updating answer criteria!");
+                        BadRequestError(res, { unique_id: platform_unique_id, text: "Error updating answer criteria!" }, null);
                     }
                 } else {
                     const not_answer = await db.sequelize.transaction((t) => {
@@ -407,7 +407,7 @@ export async function updatePlatformQuestionAnswerCriteria(req, res) {
                         addPlatformNotification(req, res, platform_notification_data);
                         OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Answer was updated successfully!" });
                     } else {
-                        throw new Error("Error updating answer criteria!");
+                        BadRequestError(res, { unique_id: platform_unique_id, text: "Error updating answer criteria!" }, null);
                     }
                 }
             }
@@ -471,7 +471,7 @@ export async function updatePlatformQuestionAnswerOrder(req, res) {
                     addPlatformNotification(req, res, platform_notification_data);
                     OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Answer was reordered successfully!" });
                 } else {
-                    throw new Error("Error reordering answers!");
+                    BadRequestError(res, { unique_id: platform_unique_id, text: "Error reordering answers!" }, null);
                 }
             } else if (replace_answer['dataValues'].unique_id === payload.unique_id) {
                 const platform_notification_data = {
@@ -518,10 +518,10 @@ export async function updatePlatformQuestionAnswerOrder(req, res) {
                     addPlatformNotification(req, res, platform_notification_data);
                     OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Answer was reordered successfully!" });
                 } else {
-                    throw new Error("Error reordering answers!");
+                    BadRequestError(res, { unique_id: platform_unique_id, text: "Error reordering answers!" }, null);
                 }
             } else {
-                throw new Error("Error getting replacement answer!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error getting replacement answer!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -562,7 +562,7 @@ export async function removePlatformQuestionAnswer(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Answer was removed successfully!" });
             } else {
-                throw new Error("Error removing answer!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error removing answer!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -603,7 +603,7 @@ export async function restorePlatformQuestionAnswer(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Answer was restored successfully!" });
             } else {
-                throw new Error("Error restoring answer!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error restoring answer!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -641,7 +641,7 @@ export async function deletePlatformQuestionAnswer(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Answer was deleted successfully!" });
             } else {
-                throw new Error("Error deleting answer!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error deleting answer!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);

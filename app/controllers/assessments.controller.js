@@ -1,6 +1,6 @@
 import { validationResult, matchedData } from 'express-validator';
 import { v4 as uuidv4 } from 'uuid';
-import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, CreationSuccessResponse, logger } from '../common/index.js';
+import { ServerError, SuccessResponse, ValidationError, OtherSuccessResponse, NotFoundError, CreationSuccessResponse, BadRequestError, logger } from '../common/index.js';
 import { default_delete_status, default_status, tag_admin, random_uuid, strip_text, save_document_domain, default_assessment_image } from '../config/config.js';
 import db from "../models/index.js";
 import { addPlatformNotification } from './platformNotifications.controller.js';
@@ -215,7 +215,7 @@ export async function updatePlatformAssessmentDetails(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Assessment was updated successfully!" });
             } else {
-                throw new Error("Error updating assessment!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error updating assessment!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -256,7 +256,7 @@ export async function updatePlatformAssessmentPrivacy(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Assessment was updated successfully!" });
             } else {
-                throw new Error("Error updating assessment privacy!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error updating assessment privacy!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -297,7 +297,7 @@ export async function updatePlatformAssessmentTimeline(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Assessment was updated successfully!" });
             } else {
-                throw new Error("Error updating assessment timeline!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error updating assessment timeline!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -338,7 +338,7 @@ export async function updatePlatformAssessmentCriteria(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Assessment was updated successfully!" });
             } else {
-                throw new Error("Error updating assessment criteria!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error updating assessment criteria!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -379,7 +379,7 @@ export async function removePlatformAssessment(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Assessment was removed successfully!" });
             } else {
-                throw new Error("Error removing assessment!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error removing assessment!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -420,7 +420,7 @@ export async function restorePlatformAssessment(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Assessment was restored successfully!" });
             } else {
-                throw new Error("Error restoring assessment!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error restoring assessment!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
@@ -458,7 +458,7 @@ export async function deletePlatformAssessment(req, res) {
                 addPlatformNotification(req, res, platform_notification_data);
                 OtherSuccessResponse(res, { unique_id: platform_unique_id, text: "Assessment was deleted successfully!" });
             } else {
-                throw new Error("Error deleting assessment!");
+                BadRequestError(res, { unique_id: platform_unique_id, text: "Error deleting assessment!" }, null);
             }
         } catch (err) {
             ServerError(res, { unique_id: platform_unique_id, text: err.message }, null);
