@@ -35,14 +35,14 @@ export const user_assessment_rules = {
                     if (!data) return Promise.reject('Question not found!');
                 });
             }),
-        check('answer_unique_id', "Answer Unique Id is required")
-            .exists({ checkNull: true, checkFalsy: true })
-            .bail()
-            .custom(answer_unique_id => {
-                return ANSWERS.findOne({ where: { unique_id: answer_unique_id, status: default_status } }).then(data => {
-                    if (!data) return Promise.reject('Answer not found!');
-                });
-            }),
+        // check('answer_unique_id', "Answer Unique Id is required")
+        //     .exists({ checkNull: true, checkFalsy: true })
+        //     .bail()
+        //     .custom(answer_unique_id => {
+        //         return ANSWERS.findOne({ where: { unique_id: answer_unique_id, status: default_status } }).then(data => {
+        //             if (!data) return Promise.reject('Answer not found!');
+        //         });
+        //     }),
         check('log_unique_id', "Log Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
@@ -56,6 +56,16 @@ export const user_assessment_rules = {
             .bail()
             .custom(unique_id => {
                 return USER_ASSESSMENTS.findOne({ where: { unique_id, status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('User Assessment not found!');
+                });
+            })
+    ],
+    forFindingUserAssessmentAlt: [
+        check('user_assessment_unique_id', "User Assessment Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(user_assessment_unique_id => {
+                return USER_ASSESSMENTS.findOne({ where: { unique_id: user_assessment_unique_id, status: default_status } }).then(data => {
                     if (!data) return Promise.reject('User Assessment not found!');
                 });
             })
