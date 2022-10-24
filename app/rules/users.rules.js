@@ -16,6 +16,32 @@ export const user_rules = {
                 });
             })
     ],
+    forFindingUserEmailForVerification: [
+        check('email', "Email is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isEmail()
+            .withMessage('Invalid email format')
+            .bail()
+            .custom(email => {
+                return USERS.findOne({ where: { email, status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('User not found!');
+                });
+            })
+    ],
+    forFindingUserMobileNumberForVerification: [
+        check('mobile_number', "Mobile number is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .isMobilePhone()
+            .withMessage('Invalid mobile number')
+            .bail()
+            .custom(mobile_number => {
+                return USERS.findOne({ where: { mobile_number, status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('User not found!');
+                });
+            })
+    ],
     forFindingUserFasly: [
         check('unique_id', "Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })
