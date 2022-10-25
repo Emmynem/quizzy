@@ -42,7 +42,7 @@ export const user_rules = {
                 });
             })
     ],
-    forFindingUserFasly: [
+    forFindingUserFalsy: [
         check('unique_id', "Unique Id is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()

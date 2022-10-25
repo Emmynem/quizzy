@@ -34,7 +34,7 @@ export default function (app) {
     app.put("/root/user/access/suspended", [checks.verifyKey, checks.isAdministratorKey, user_rules.forFindingUser], updateUserAccessSuspended);
     app.put("/root/user/access/revoked", [checks.verifyKey, checks.isAdministratorKey, user_rules.forFindingUser], updateUserAccessRevoked);
     app.put("/root/user/remove", [checks.verifyKey, checks.isAdministratorKey, user_rules.forFindingUser], removeUser);
-    app.put("/root/user/restore", [checks.verifyKey, checks.isAdministratorKey, user_rules.forFindingUserFasly], restoreUser);
+    app.put("/root/user/restore", [checks.verifyKey, checks.isAdministratorKey, user_rules.forFindingUserFalsy], restoreUser);
 
     app.delete("/root/user/delete", [checks.verifyKey, checks.isAdministratorKey, user_rules.forFindingUser], removeUserPermanently);
 };
