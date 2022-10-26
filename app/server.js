@@ -7,7 +7,17 @@ import { quizzy_header_key, quizzy_header_token } from './config/config.js';
 import logger from "./common/logger.js";
 import morganMiddleware from "./middleware/morgan.js";
 import db from "./models/index.js";
-import { createApiKeys, createAppDefaults } from './config/default.config.js';
+import { createApiKeys, createAppDefaults, createDefaultPlatform } from './config/default.config.js';
+import answersRoutes from './routes/answers.routes.js';
+import assessmentsRoutes from './routes/assessments.routes.js';
+import authRoutes from './routes/auth.routes.js';
+import logsRoutes from './routes/logs.routes.js';
+import notificationsRoutes from './routes/notifications.routes.js';
+import platformNotificationsRoutes from './routes/platformNotifications.routes.js';
+import platformsRoutes from './routes/platforms.routes.js';
+import questionsRoutes from './routes/questions.routes.js';
+import userAssessmentsRoutes from './routes/userAssessments.routes.js';
+import usersRoutes from './routes/users.routes.js';
 
 const app = express();
 
@@ -43,11 +53,22 @@ db.sequelize.sync().then(() => {
     // creating defaults
     createApiKeys();
     createAppDefaults();
+    createDefaultPlatform();
 });
 
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Binding routes
+answersRoutes(app);
+assessmentsRoutes(app);
+authRoutes(app);
+logsRoutes(app);
+notificationsRoutes(app);
+platformNotificationsRoutes(app);
+platformsRoutes(app);
+questionsRoutes(app);
+userAssessmentsRoutes(app);
+usersRoutes(app);
 
 // change timezone for app
 process.env.TZ = "Africa/Lagos";
