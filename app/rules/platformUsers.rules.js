@@ -1,6 +1,6 @@
 import { check } from 'express-validator';
 import db from "../models/index.js";
-import { default_status, validate_platform_user_route, super_admin_routes, validate_platform_user_route_max_length } from '../config/config.js';
+import { default_status, validate_platform_user_route, super_admin_routes, validate_platform_user_route_max_length, default_delete_status } from '../config/config.js';
 
 const PLATFORMS = db.platforms;
 const PLATFORM_USERS = db.platform_users;
@@ -26,6 +26,30 @@ export const platform_user_rules = {
                         platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '', 
                         status: default_status 
                     } 
+                }).then(data => {
+                    if (!data) return Promise.reject('Platform user not found!');
+                });
+            })
+    ],
+    forFindingPlatformUserFalsy: [
+        check('platform_unique_id', "Platform Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom(platform_unique_id => {
+                return PLATFORMS.findOne({ where: { unique_id: platform_unique_id, status: default_status } }).then(data => {
+                    if (!data) return Promise.reject('Platform not found!');
+                });
+            }),
+        check('unique_id', "Unique Id is required")
+            .exists({ checkNull: true, checkFalsy: true })
+            .bail()
+            .custom((unique_id, { req }) => {
+                return PLATFORM_USERS.findOne({
+                    where: {
+                        unique_id,
+                        platform_unique_id: req.query.platform_unique_id || req.body.platform_unique_id || '',
+                        status: default_delete_status
+                    }
                 }).then(data => {
                     if (!data) return Promise.reject('Platform user not found!');
                 });
@@ -117,7 +141,7 @@ export const platform_user_rules = {
         check('routes', "Routes is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
-            .custom(routes => !!validate_platform_user_route(routes)).withMessage(`Invalid route, accepts '${super_admin_routes}' or an array(not empty)`)
+            .custom(routes => !!validate_platform_user_route(routes)).withMessage(`Invalid route, accepts an array(not empty)`)
             .bail()
             .custom(routes => !!validate_platform_user_route_max_length(routes)).withMessage(`Max length reached`)
     ],
@@ -180,7 +204,7 @@ export const platform_user_rules = {
         check('routes', "Routes is required")
             .exists({ checkNull: true, checkFalsy: true })
             .bail()
-            .custom(routes => !!validate_platform_user_route(routes)).withMessage(`Invalid route, accepts '${super_admin_routes}' or an array(not empty)`)
+            .custom(routes => !!validate_platform_user_route(routes)).withMessage(`Invalid route, accepts an array(not empty)`)
             .bail()
             .custom(routes => !!validate_platform_user_route_max_length(routes)).withMessage(`Max length reached`)
     ]

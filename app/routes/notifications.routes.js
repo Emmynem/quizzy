@@ -16,7 +16,7 @@ export default function (app) {
     app.get("/root/notifications", [checks.verifyKey, checks.isAdministratorKey], rootGetNotifications);
 
     app.get("/notifications", [checks.verifyToken, checks.isUser], getUserNotifications);
-    app.get("/notification", [checks.verifyToken, checks.isUser], getUserNotification);
+    app.get("/notification", [checks.verifyToken, checks.isUser, notification_rules.forFindingNotificationAlt], getUserNotification);
 
     app.put("/notification/seen", [checks.verifyToken, checks.isUser, notification_rules.forFindingNotificationAlt], updateUserNotificationSeen);
 

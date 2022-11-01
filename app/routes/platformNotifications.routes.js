@@ -16,9 +16,9 @@ export default function (app) {
     app.get("/root/platform/notifications", [checks.verifyKey, checks.isAdministratorKey], rootGetNotifications);
 
     app.get("/platform/notifications", [checks.verifyPlatformUserToken, checks.isPlatformUser], getPlatformNotifications);
-    app.get("/platform/notification", [checks.verifyPlatformUserToken, checks.isPlatformUser], getPlatformNotification);
+    app.get("/platform/notification", [checks.verifyPlatformUserToken, checks.isPlatformUser, platform_notification_rules.forFindingPlatformNotificationAlt], getPlatformNotification);
 
     app.put("/platform/notification/seen", [checks.verifyPlatformUserToken, checks.isPlatformUser, platform_notification_rules.forFindingPlatformNotificationAlt], updatePlatformNotificationSeen);
 
-    app.delete("/platform/notification", [checks.verifyPlatfToken, checks.isPlatformUser, platform_notification_rules.forFindingPlatformNotificationAlt], removePlatformNotification);
+    app.delete("/platform/notification", [checks.verifyPlatformToken, checks.isPlatformUser, platform_notification_rules.forFindingPlatformNotificationAlt], removePlatformNotification);
 };

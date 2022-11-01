@@ -23,11 +23,11 @@ export function rootGetPlatforms (req, res) {
         order: [
             ['createdAt', 'DESC']
         ]
-    }).then(users => {
-        if (!users || users.length == 0) {
+    }).then(platforms => {
+        if (!platforms || platforms.length == 0) {
             SuccessResponse(res, { unique_id: tag_admin, text: "Platforms Not found" }, []);
         } else {
-            SuccessResponse(res, { unique_id: tag_admin, text: "Platforms loaded" }, users);
+            SuccessResponse(res, { unique_id: tag_admin, text: "Platforms loaded" }, platforms);
         }
     }).catch(err => {
         ServerError(res, { unique_id: tag_admin, text: err.message }, null);
@@ -47,11 +47,11 @@ export function rootGetPlatform (req, res) {
             where: {
                 ...payload
             }
-        }).then(user => {
-            if (!user) {
+        }).then(platform => {
+            if (!platform) {
                 NotFoundError(res, { unique_id: tag_admin, text: "Platform not found" }, null);
             } else {
-                SuccessResponse(res, { unique_id: tag_admin, text: "Platform loaded" }, user);
+                SuccessResponse(res, { unique_id: tag_admin, text: "Platform loaded" }, platform);
             }
         }).catch(err => {
             ServerError(res, { unique_id: tag_admin, text: err.message }, null);
@@ -101,8 +101,8 @@ export async function updatePlatform(req, res) {
             if (platform > 0) {
                 const notification_data = {
                     platform_unique_id,
-                    type: "Personal",
-                    action: "Updated profile details!"
+                    type: "Platform",
+                    action: "Updated platform details!"
                 };
                 addPlatformNotification(req, res, notification_data);
                 SuccessResponse(res, { unique_id: platform_unique_id, text: "Platform details updated successfully!" }, platform);

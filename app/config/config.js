@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import fs from 'fs';
+import fs, { mkdirSync } from 'fs';
 import path from 'path';
 import { logger } from '../common/index.js';
 
@@ -59,6 +59,17 @@ export const save_image_dir = "/resources/images/";
 export const save_document_path = save_document_domain + "/resources/documents/";
 export const profile_image_document_name = "Profile Image";
 // End - Paths and document names
+
+// Creating paths if not available
+const default_resources_path = path.parse(__document_quizzy + "/resources/");
+const default_document_path = path.parse(__document_quizzy + "/resources/documents/");
+const default_image_path = path.parse(__document_quizzy + "/resources/images/");
+
+if (!fs.existsSync(__document_quizzy)) mkdirSync(__document_quizzy);
+if (fs.existsSync(__document_quizzy) && !fs.existsSync(path.format(default_resources_path))) mkdirSync(path.format(default_resources_path));
+if (fs.existsSync(__document_quizzy) && !fs.existsSync(path.format(default_document_path))) mkdirSync(path.format(default_document_path));
+if (fs.existsSync(__document_quizzy) && !fs.existsSync(path.format(default_image_path))) mkdirSync(path.format(default_image_path));
+// End - Creating paths if not available
 
 // Accesses
 export const access_granted = 1;
@@ -251,7 +262,7 @@ export const check_user_route = (method, path, routes) => {
 };
 
 export const validate_platform_user_route = (routes) => {
-    if (routes === super_admin_routes) return true
+    if (routes === super_admin_routes) return false
     else if (!Array.isArray(routes)) return false
     else if (routes.length === 0) return false
     else return true
